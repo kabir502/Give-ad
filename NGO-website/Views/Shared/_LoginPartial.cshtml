@@ -1,0 +1,55 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav align-items-center">
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var isAdmin = User.IsInRole("Admin");
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle btn btn-outline-primary btn-sm px-3 rounded-pill text-dark fw-semibold" href="#" id="userMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fa-solid @(isAdmin ? "fa-user-shield text-danger" : "fa-circle-user text-primary") me-1"></i>
+            @(currentUser?.FullName ?? User.Identity?.Name)
+            @(isAdmin ? "(Admin)" : "")
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2 py-2" aria-labelledby="userMenuDropdown">
+            @if (isAdmin)
+            {
+                <li><a class="dropdown-item py-2 fw-semibold text-danger" asp-controller="Admin" asp-action="Index"><i class="fa-solid fa-gauge me-2"></i>Admin Dashboard</a></li>
+                <li><hr class="dropdown-divider"></li>
+            }
+            else
+            {
+                <li><a class="dropdown-item py-2 fw-semibold text-primary" asp-controller="UserDashboard" asp-action="Index"><i class="fa-solid fa-gauge me-2"></i>User Dashboard</a></li>
+                <li><a class="dropdown-item py-2" asp-controller="UserDashboard" asp-action="MyDonations"><i class="fa-solid fa-hand-holding-dollar me-2 text-success"></i>My Donations</a></li>
+                <li><a class="dropdown-item py-2" asp-controller="UserDashboard" asp-action="MyPayments"><i class="fa-solid fa-receipt me-2 text-warning"></i>My Payments</a></li>
+                <li><a class="dropdown-item py-2" asp-controller="UserDashboard" asp-action="MyProgrammes"><i class="fa-solid fa-calendar-check me-2 text-primary"></i>My Programmes</a></li>
+                <li><a class="dropdown-item py-2" asp-controller="UserDashboard" asp-action="MyQueries"><i class="fa-solid fa-comments me-2 text-info"></i>My Queries</a></li>
+                <li><a class="dropdown-item py-2" asp-controller="UserDashboard" asp-action="InviteFriend"><i class="fa-solid fa-user-plus me-2 text-secondary"></i>Invite Friends</a></li>
+                <li><hr class="dropdown-divider"></li>
+            }
+            <li><a class="dropdown-item py-2" asp-controller="@(isAdmin ? "Admin" : "Account")" asp-action="Profile"><i class="fa-solid fa-gear me-2 text-secondary"></i>Profile Settings</a></li>
+            <li>
+                <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item py-2 text-danger fw-semibold"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item me-2">
+        <a class="nav-link fw-semibold text-dark" asp-controller="Account" asp-action="Login">
+            <i class="fa-solid fa-right-to-bracket me-1"></i>Login
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="btn btn-primary btn-sm px-3 rounded-pill fw-semibold shadow-sm" asp-controller="Account" asp-action="Register">
+            <i class="fa-solid fa-user-plus me-1"></i>Register
+        </a>
+    </li>
+}
+</ul>

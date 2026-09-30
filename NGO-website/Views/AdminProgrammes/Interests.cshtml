@@ -1,0 +1,61 @@
+@model Programme
+@{
+    ViewData["Title"] = $"{Model.Title} - Volunteer Signups";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Details" asp-route-id="@Model.ProgrammeId" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Programme Details
+    </a>
+    <h3 class="fw-bold mb-1 text-dark">Volunteer & Attendee Registrations</h3>
+    <p class="text-muted mb-0">List of community members registered for: <strong class="text-primary">@Model.Title</strong></p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-users text-info me-2"></i>Registrations List</h6>
+        <span class="badge bg-primary">@(Model.ProgrammeInterests?.Count ?? 0) Total</span>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.ProgrammeInterests != null && Model.ProgrammeInterests.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Phone Number</th>
+                            <th>Message / Special Skills</th>
+                            <th>Registration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int idx = 1; }
+                        @foreach (var item in Model.ProgrammeInterests.OrderByDescending(x => x.RegisteredAt))
+                        {
+                            <tr>
+                                <td><span class="text-muted fw-bold">@(idx++)</span></td>
+                                <td><span class="fw-bold text-dark">@item.FullName</span></td>
+                                <td><a href="mailto:@item.Email" class="text-primary text-decoration-none">@item.Email</a></td>
+                                <td><span>@item.Phone</span></td>
+                                <td><span class="text-muted small">@(string.IsNullOrEmpty(item.Notes) ? "N/A" : item.Notes)</span></td>
+                                <td><span class="text-dark">@item.RegisteredAt.ToString("dd MMM yyyy, hh:mm tt")</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-user-xmark fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No registrations yet</h5>
+                <p class="mb-0">No attendees have signed up for this programme yet.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,160 @@
+@model NGO_website.ViewModels.Account.ProfileViewModel
+@{
+    ViewData["Title"] = "Admin Profile";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Administrator Profile</h3>
+        <p class="text-muted mb-0">Manage your administrative credentials, contact details, and security settings within the admin portal.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary shadow-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+        </a>
+        <a asp-controller="AdminSettings" asp-action="Index" class="btn btn-outline-primary shadow-sm">
+            <i class="fa-solid fa-sliders me-1"></i> System Settings
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Admin Profile Information -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex align-items-center gap-3">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="fa-solid fa-user-shield fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">Personal & Contact Information</h5>
+                    <p class="text-muted text-xs mb-0">Update your administrator details and regional contact records.</p>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Admin" asp-action="Profile" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-user text-muted"></i></span>
+                                <input asp-for="FullName" class="form-control" />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-envelope text-muted"></i></span>
+                                <input asp-for="Email" class="form-control bg-light" readonly />
+                            </div>
+                            <small class="text-muted text-xs">Email address cannot be modified</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-phone text-muted"></i></span>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="PhoneNumber" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-city text-muted"></i></span>
+                                <input asp-for="City" class="form-control" />
+                            </div>
+                            <span asp-validation-for="City" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Profession" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-briefcase text-muted"></i></span>
+                                <input asp-for="Profession" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Profession" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Address" class="form-label fw-semibold text-secondary"></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fa-solid fa-location-dot text-muted"></i></span>
+                                <input asp-for="Address" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Address" class="text-danger text-xs"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="badge bg-danger text-xs px-3 py-2 rounded-pill">
+                            <i class="fa-solid fa-shield me-1"></i> Admin Privileges Active
+                        </span>
+                        <button type="submit" class="btn btn-primary px-4 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Password Card -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex align-items-center gap-3">
+                <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="fa-solid fa-lock fs-5"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">Security & Password</h5>
+                    <p class="text-muted text-xs mb-0">Update your administrative access password.</p>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Admin" asp-action="ChangePassword" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Current Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-key text-muted"></i></span>
+                            <input name="OldPassword" type="password" class="form-control" required placeholder="Enter current password" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-lock text-muted"></i></span>
+                            <input name="NewPassword" type="password" class="form-control" required minlength="6" placeholder="Min. 6 characters" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Confirm New Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-circle-check text-muted"></i></span>
+                            <input name="ConfirmPassword" type="password" class="form-control" required minlength="6" placeholder="Re-enter new password" />
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border text-xs text-muted mb-4">
+                        <i class="fa-solid fa-circle-info text-primary me-1"></i> Passwords must be at least 6 characters and include at least one digit and one lowercase letter.
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 fw-semibold shadow-sm py-2">
+                        <i class="fa-solid fa-shield-halved me-2"></i>Update Admin Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

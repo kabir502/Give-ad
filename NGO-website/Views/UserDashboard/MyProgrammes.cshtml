@@ -1,0 +1,90 @@
+@model IEnumerable<NGO_website.Models.Entities.ProgrammeInterest>
+@{
+    ViewData["Title"] = "My Programmes";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">Registered Programmes</h2>
+            <p class="text-secondary text-sm m-0">Programmes and volunteering opportunities you have signed up for.</p>
+        </div>
+        <a asp-controller="Programmes" asp-action="Index" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+            <i class="fa-solid fa-calendar-plus me-1"></i> Explore Programmes
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <i class="fa-solid fa-calendar-check text-secondary display-4 mb-3"></i>
+            <h5 class="fw-bold text-dark">No programme registrations yet</h5>
+            <p class="text-secondary text-sm">Browse upcoming programmes and register your interest to get involved.</p>
+            <div>
+                <a asp-controller="Programmes" asp-action="Index" class="btn btn-outline-primary rounded-pill">Browse Programmes</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Programme</th>
+                            <th>NGO</th>
+                            <th>Date &amp; Time</th>
+                            <th>Location</th>
+                            <th>Registered</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold text-dark">@(item.Programme?.Title ?? "Programme")</td>
+                                <td class="text-secondary">@(item.Programme?.NGO?.Name ?? "—")</td>
+                                <td class="text-secondary text-sm">
+                                    @(item.Programme?.Date.ToString("dd MMM yyyy") ?? "—")
+                                    @if (!string.IsNullOrEmpty(item.Programme?.StartTime))
+                                    {
+                                        <small class="d-block text-muted">@item.Programme.StartTime@(string.IsNullOrEmpty(item.Programme.EndTime) ? "" : $" – {item.Programme.EndTime}")</small>
+                                    }
+                                </td>
+                                <td class="text-secondary text-sm">
+                                    <i class="fa-solid fa-location-dot text-danger me-1"></i>@(item.Programme?.Location ?? "—")
+                                </td>
+                                <td class="text-secondary text-sm">@item.RegisteredAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (string.Equals(item.Status, "Attended", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-success px-3 py-2">Attended</span>
+                                    }
+                                    else if (string.Equals(item.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-danger px-3 py-2">Cancelled</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info text-dark px-3 py-2">@item.Status</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @if (item.Programme != null)
+                                    {
+                                        <a asp-controller="Programmes" asp-action="Details" asp-route-id="@item.ProgrammeId" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                            View Details
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,112 @@
+@model ContactMessage
+@{
+    ViewData["Title"] = $"Message: {Model.Subject}";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Inquiries
+    </a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">Subject: @Model.Subject</h3>
+            <span class="text-muted text-xs">Received on @Model.CreatedAt.ToString("dddd, dd MMMM yyyy, hh:mm tt")</span>
+        </div>
+        <div>
+            <form asp-action="Delete" asp-route-id="@Model.ContactMessageId" method="post" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="fa-solid fa-trash me-1"></i> Delete Message
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Message Content -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                        @Model.Name.Substring(0, 1).ToUpper()
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-dark">@Model.Name</h6>
+                        <span class="text-xs text-muted">From: @Model.Email</span>
+                    </div>
+                </div>
+                <span class="badge bg-light text-dark border">Contact Inquiry</span>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-dark leading-relaxed mb-0" style="white-space: pre-line;">@Model.Message</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.AdminReply))
+        {
+            <div class="card border-0 shadow-sm rounded-3 bg-light border-start border-4 border-success mb-4">
+                <div class="card-header bg-transparent border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-success mb-0"><i class="fa-solid fa-reply me-1"></i>Previous Admin Response</h6>
+                    <span class="text-xs text-muted">@Model.RepliedAt?.ToString("dd MMM yyyy, hh:mm tt")</span>
+                </div>
+                <div class="card-body p-4 pt-0">
+                    <p class="text-dark mb-0">@Model.AdminReply</p>
+                </div>
+            </div>
+        }
+
+        <!-- Reply Form -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-paper-plane text-primary me-2"></i>Email Response</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Reply" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.ContactMessageId" />
+                    <div class="mb-3">
+                        <label class="form-label text-xs fw-bold text-muted">Your Reply (will be emailed to @Model.Email)</label>
+                        <textarea name="replyText" class="form-control" rows="5" placeholder="Write your response message to the sender..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Send Reply Email
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sender Details Sidebar -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-address-card text-info me-2"></i>Sender Details</h6>
+            </div>
+            <div class="card-body p-4">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Name:</span>
+                        <span class="fw-semibold text-dark">@Model.Name</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Email:</span>
+                        <a href="mailto:@Model.Email" class="text-primary text-decoration-none">@Model.Email</a>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Phone:</span>
+                        <span class="text-dark">@(Model.Phone ?? "Not provided")</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Status:</span>
+                        <span class="badge @(!string.IsNullOrEmpty(Model.AdminReply) ? "bg-success" : "bg-secondary")">
+                            @(!string.IsNullOrEmpty(Model.AdminReply) ? "Replied" : "Unanswered")
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

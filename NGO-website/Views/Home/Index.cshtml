@@ -1,0 +1,278 @@
+@model NGO_website.ViewModels.Home.HomeViewModel
+@{
+    ViewData["Title"] = "GIVE-AID — Together, We Can Change a Life";
+    ViewData["IsLanding"] = true;
+
+    var missionImage = Model.GalleryPreview.FirstOrDefault()?.ImageUrl
+        ?? "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=900&auto=format&fit=crop&q=80";
+    var storyImage = Model.GalleryPreview.Skip(1).FirstOrDefault()?.ImageUrl
+        ?? Model.GalleryPreview.FirstOrDefault()?.ImageUrl
+        ?? "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=1000&auto=format&fit=crop&q=80";
+}
+
+<!-- Frame preload loader -->
+<div id="lpLoader" class="lp-loader" role="status" aria-live="polite" aria-busy="true">
+    <div class="lp-loader__inner">
+        <div class="lp-loader__brand">GIVE<span>-AID</span></div>
+        <p class="lp-loader__label">Preparing your journey...</p>
+        <div class="lp-loader__track" aria-hidden="true">
+            <div id="lpLoaderBar" class="lp-loader__bar"></div>
+        </div>
+        <div id="lpLoaderPct" class="lp-loader__pct">0%</div>
+    </div>
+</div>
+
+<!-- Cinematic Hero: scroll-scrubbed 235-frame sequence -->
+<section id="lpHero" class="lp-hero" aria-label="Hero">
+    <div class="lp-hero__pin">
+        <div class="lp-hero__canvas-wrap">
+            <canvas id="lpHeroCanvas" class="lp-hero__canvas" role="img" aria-label="Scroll-driven visual story of hope and humanitarian impact"></canvas>
+        </div>
+        <div class="lp-hero__overlay" aria-hidden="true"></div>
+
+        <div class="lp-hero__content">
+            <span class="lp-hero__brand-mark">GIVE-AID</span>
+            <h1 style="color: white"class="lp-hero__title">Together, We Can Change a Life.</h1>
+            <p class="lp-hero__lead">
+                Your contribution can provide hope, opportunity and a better tomorrow —
+                through verified causes, audited receipts, and transparent giving across Pakistan.
+            </p>
+            <div class="lp-hero__trust">
+                <span class="lp-hero__trust-dot" aria-hidden="true"></span>
+                Trusted by donors &amp; verified welfare partners
+            </div>
+            <div class="lp-hero__actions">
+                <a asp-controller="Donate" asp-action="Index" class="lp-btn lp-btn--primary">Donate Now</a>
+                <a href="#impact" class="lp-btn lp-btn--ghost">See Our Impact</a>
+            </div>
+        </div>
+
+        <div class="lp-scroll-hint" aria-hidden="true">
+            <span>Scroll</span>
+            <span class="lp-scroll-hint__line"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Statistics -->
+<section id="impact" class="lp-section lp-section--warm">
+    <div class="lp-container">
+        <div class="lp-section-head lp-reveal">
+            <span class="lp-eyebrow">Our Impact</span>
+            <h2 class="lp-heading">Numbers that tell a human story.</h2>
+            <p class="lp-sub">Every donation is tracked, verified, and directed to registered welfare causes.</p>
+        </div>
+        <div class="lp-stats lp-reveal">
+            <div class="lp-stat">
+                <div class="lp-stat__value">
+                    <span data-counter="@Model.TotalLivesImpacted" data-suffix="+">0</span>
+                </div>
+                <div class="lp-stat__label">Lives Impacted</div>
+            </div>
+            <div class="lp-stat">
+                <div class="lp-stat__value">
+                    <span data-counter="@((int)Model.TotalFundsRaised)" data-prefix="PKR ">0</span>
+                </div>
+                <div class="lp-stat__label">Total Donations</div>
+            </div>
+            <div class="lp-stat">
+                <div class="lp-stat__value">
+                    <span data-counter="@Model.TotalCausesCount" data-suffix="+">0</span>
+                </div>
+                <div class="lp-stat__label">Active Campaigns</div>
+            </div>
+            <div class="lp-stat">
+                <div class="lp-stat__value">
+                    <span data-counter="@Model.TotalNGOsCount" data-suffix="+">0</span>
+                </div>
+                <div class="lp-stat__label">Partner NGOs</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission / About -->
+<section id="mission" class="lp-section lp-section--soft">
+    <div class="lp-container">
+        <div class="lp-mission">
+            <div class="lp-mission__visual lp-reveal">
+                <img src="@missionImage" alt="Communities supported through GIVE-AID programmes" loading="lazy" width="800" height="1000" />
+            </div>
+            <div class="lp-mission__body lp-reveal">
+                <span class="lp-eyebrow">Our Mission</span>
+                <h2 class="lp-heading">Why GIVE-AID exists.</h2>
+                <p>
+                    We built a single trusted platform so generosity can reach verified welfare organizations
+                    without friction, doubt, or opacity. From orphan care and education to emergency relief
+                    and healthcare — donations move with accountability.
+                </p>
+                <p>
+                    Every rupee is reconciled through multi-channel payments, unique receipt references,
+                    and continuous monitoring of registered NGOs and causes.
+                </p>
+                <ul class="lp-mission__points">
+                    <li>Verified NGOs and audited donation trails</li>
+                    <li>Cause-level transparency with live progress</li>
+                    <li>EasyPaisa, JazzCash &amp; card payments</li>
+                </ul>
+                <div style="margin-top: 2rem;">
+                    <a asp-controller="AboutUs" asp-action="Index" class="lp-btn lp-btn--dark">About GIVE-AID</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Donation Causes -->
+<section id="causes" class="lp-section lp-section--warm">
+    <div class="lp-container">
+        <div class="lp-section-head lp-reveal">
+            <span class="lp-eyebrow">Causes</span>
+            <h2 class="lp-heading">Choose where your kindness lands.</h2>
+            <p class="lp-sub">Support urgent welfare causes with clear goals, progress tracking, and direct donate links.</p>
+        </div>
+
+        <div class="lp-causes-grid">
+            @foreach (var cause in Model.FeaturedCauses.Take(6))
+            {
+                var img = string.IsNullOrEmpty(cause.ImageUrl)
+                    ? "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=700&auto=format&fit=crop&q=80"
+                    : cause.ImageUrl;
+                var desc = cause.Description?.Length > 110
+                    ? cause.Description.Substring(0, 107) + "..."
+                    : cause.Description;
+
+                <article class="lp-cause lp-reveal">
+                    <div class="lp-cause__media">
+                        <img src="@img" alt="@cause.Name" loading="lazy" width="700" height="440" />
+                    </div>
+                    <div class="lp-cause__body">
+                        <h3 class="lp-cause__title">
+                            <a asp-controller="Causes" asp-action="Details" asp-route-id="@cause.CauseId">@cause.Name</a>
+                        </h3>
+                        <p class="lp-cause__desc">@desc</p>
+                        <div class="lp-progress">
+                            <div class="lp-progress__meta">
+                                <span>PKR @cause.RaisedAmount.ToString("N0")</span>
+                                <span>Goal PKR @cause.TargetAmount.ToString("N0")</span>
+                            </div>
+                            <div class="lp-progress__track" role="progressbar" aria-valuenow="@cause.ProgressPercentage" aria-valuemin="0" aria-valuemax="100" aria-label="Funding progress">
+                                <div class="lp-progress__fill" data-progress="@cause.ProgressPercentage"></div>
+                            </div>
+                        </div>
+                        <a asp-controller="Donate" asp-action="Index" asp-route-causeId="@cause.CauseId" class="lp-cause__btn">Donate</a>
+                    </div>
+                </article>
+            }
+        </div>
+
+        <div class="lp-causes-more lp-reveal">
+            <a asp-controller="Causes" asp-action="Index" class="lp-btn lp-btn--dark">View All Causes</a>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how" class="lp-section lp-section--soft">
+    <div class="lp-container">
+        <div class="lp-section-head lp-section-head--center lp-reveal">
+            <span class="lp-eyebrow">How It Works</span>
+            <h2 class="lp-heading">From compassion to impact in four steps.</h2>
+            <p class="lp-sub">A clear path designed for trust — choose, give, deliver, and see results.</p>
+        </div>
+        <div class="lp-steps">
+            <div class="lp-step lp-reveal">
+                <h3>Choose a Cause</h3>
+                <p>Browse verified welfare causes and campaigns aligned with the change you want to create.</p>
+            </div>
+            <div class="lp-step lp-reveal">
+                <h3>Make a Donation</h3>
+                <p>Give securely via EasyPaisa, JazzCash, or card — with instant digital receipt references.</p>
+            </div>
+            <div class="lp-step lp-reveal">
+                <h3>Funds Reach the Cause</h3>
+                <p>Approved donations are reconciled and directed to the registered NGO and cause you selected.</p>
+            </div>
+            <div class="lp-step lp-reveal">
+                <h3>See the Impact</h3>
+                <p>Follow progress, programmes, and field stories as your contribution becomes real change.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Story -->
+<section id="story" class="lp-section lp-section--navy">
+    <div class="lp-container">
+        <div class="lp-story">
+            <div class="lp-story__media lp-reveal">
+                <img src="@storyImage" alt="A story of lives transformed through collective giving" loading="lazy" width="900" height="720" />
+            </div>
+            <div class="lp-reveal">
+                <span class="lp-eyebrow">Impact Story</span>
+                <blockquote class="lp-story__quote">
+                    “A single act of giving became a classroom, a meal, and a future someone could believe in.”
+                </blockquote>
+                <p class="lp-story__text">
+                    Across partner programmes, donors fund education kits, medical care, and emergency relief
+                    for families who need dignity restored — not just aid delivered. Transparency means every
+                    contribution can be traced from wallet to wellbeing.
+                </p>
+                <div class="lp-story__attr">Field programmes · GIVE-AID partners</div>
+                <div style="margin-top: 1.75rem;">
+                    <a asp-controller="Gallery" asp-action="Index" class="lp-btn lp-btn--primary">Explore the Gallery</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section id="voices" class="lp-section lp-section--warm">
+    <div class="lp-container">
+        <div class="lp-section-head lp-section-head--center lp-reveal">
+            <span class="lp-eyebrow">Voices</span>
+            <h2 class="lp-heading">Trusted by those who give — and those who receive.</h2>
+        </div>
+        <div class="lp-testimonials">
+            <figure class="lp-testimonial lp-reveal">
+                <blockquote class="lp-testimonial__quote">“I finally feel confident that my donation reaches the right place. The receipts and cause updates make all the difference.”</blockquote>
+                <figcaption>
+                    <p class="lp-testimonial__name">Ayesha R.</p>
+                    <p class="lp-testimonial__role">Monthly donor · Karachi</p>
+                </figcaption>
+            </figure>
+            <figure class="lp-testimonial lp-reveal">
+                <blockquote class="lp-testimonial__quote">“Through GIVE-AID we reached more supporters for our orphan care programme — with clear reporting every step of the way.”</blockquote>
+                <figcaption>
+                    <p class="lp-testimonial__name">Imran K.</p>
+                    <p class="lp-testimonial__role">Partner NGO coordinator</p>
+                </figcaption>
+            </figure>
+            <figure class="lp-testimonial lp-reveal">
+                <blockquote class="lp-testimonial__quote">“The process was simple. I chose a healthcare cause, donated in minutes, and received confirmation immediately.”</blockquote>
+                <figcaption>
+                    <p class="lp-testimonial__name">Sara M.</p>
+                    <p class="lp-testimonial__role">First-time donor · Islamabad</p>
+                </figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="lp-final" aria-label="Donate today">
+    <div class="lp-reveal">
+        <h2 class="lp-final__title">Your Small Act Can Create a Big Change.</h2>
+        <p class="lp-final__sub">
+            Join thousands of donors supporting verified welfare causes. Hope begins with one decision.
+        </p>
+        <a asp-controller="Donate" asp-action="Index" class="lp-btn lp-btn--primary">Donate Today</a>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="~/js/landing.js" asp-append-version="true"></script>
+}

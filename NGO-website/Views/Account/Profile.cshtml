@@ -1,0 +1,111 @@
+@model NGO_website.ViewModels.Account.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile Settings";
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "_AdminLayout";
+    }
+}
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Profile Details Card -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                        <i class="fa-solid fa-user-gear fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold text-dark m-0">Profile Information</h4>
+                        <p class="text-secondary text-sm m-0">Update your contact details and identity information.</p>
+                    </div>
+                </div>
+
+                <form asp-controller="Account" asp-action="Profile" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control bg-light" readonly />
+                            <small class="text-muted text-xs">Email cannot be modified directly</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PhoneNumber" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="City" class="form-control" />
+                            <span asp-validation-for="City" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Profession" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Profession" class="form-control" />
+                            <span asp-validation-for="Profession" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Address" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger text-xs"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm mt-4">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Card -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                        <i class="fa-solid fa-lock fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-dark m-0">Change Password</h5>
+                        <p class="text-secondary text-xs m-0">Ensure your account remains safe.</p>
+                    </div>
+                </div>
+
+                <form asp-controller="Account" asp-action="ChangePassword" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">Current Password</label>
+                        <input name="OldPassword" type="password" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-secondary">New Password</label>
+                        <input name="NewPassword" type="password" class="form-control" required minlength="6" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-secondary">Confirm New Password</label>
+                        <input name="ConfirmPassword" type="password" class="form-control" required minlength="6" />
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

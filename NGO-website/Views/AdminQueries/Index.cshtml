@@ -1,0 +1,114 @@
+@model List<Query>
+@{
+    ViewData["Title"] = "User Support Queries";
+    Layout = "_AdminLayout";
+    var selectedStatus = ViewData["SelectedStatus"] as QueryStatus?;
+    var search = ViewData["Search"] as string;
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">User Support Helpdesk</h3>
+        <p class="text-muted mb-0">Review help tickets, reply to inquiries, and update query resolution status.</p>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label text-xs fw-bold text-muted">Search Subject / Sender / Email</label>
+                <input type="text" name="search" value="@search" class="form-control form-control-sm" placeholder="e.g. Receipt issue, John, etc...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-xs fw-bold text-muted">Status</label>
+                <select name="status" class="form-select form-select-sm" asp-items="Html.GetEnumSelectList<QueryStatus>()">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="fa-solid fa-rotate-left"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Queries Table -->
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ticket / Date</th>
+                            <th>User Name & Email</th>
+                            <th>Subject & Category</th>
+                            <th>Replies</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var q in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-dark d-block">#QRY-@q.QueryId</span>
+                                    <span class="text-xs text-muted">@q.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark d-block">@q.FullName</span>
+                                    <span class="text-xs text-muted">@q.Email</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@q.QueryId" class="fw-bold text-dark text-decoration-none d-block">
+                                        @q.Subject
+                                    </a>
+                                    <span class="badge bg-light text-dark border">@q.Category</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark">@(q.Replies?.Count ?? 0) Replies</span>
+                                </td>
+                                <td>
+                                    @if (q.Status == QueryStatus.Open)
+                                    {
+                                        <span class="badge bg-danger">Open</span>
+                                    }
+                                    else if (q.Status == QueryStatus.InProgress)
+                                    {
+                                        <span class="badge bg-warning text-dark">In Progress</span>
+                                    }
+                                    else if (q.Status == QueryStatus.Resolved)
+                                    {
+                                        <span class="badge bg-success">Resolved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Closed</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@q.QueryId" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-reply me-1"></i> Open Ticket
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-headset fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No queries found</h5>
+                <p class="mb-0">There are no user support queries matching your criteria.</p>
+            </div>
+        }
+    </div>
+</div>

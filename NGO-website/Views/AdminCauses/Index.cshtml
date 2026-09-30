@@ -1,0 +1,102 @@
+@model List<Cause>
+@{
+    ViewData["Title"] = "Causes Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Welfare Causes & Projects</h3>
+        <p class="text-muted mb-0">Manage fundraising goals, categories, and track community contributions.</p>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add New Cause
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cause Details</th>
+                            <th>Partner NGO</th>
+                            <th>Category</th>
+                            <th>Target / Raised (PKR)</th>
+                            <th style="min-width: 130px;">Progress</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cause in Model)
+                        {
+                            var progress = cause.TargetAmount > 0 ? Math.Min(100, (int)((cause.RaisedAmount / cause.TargetAmount) * 100)) : 0;
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@cause.ImageUrl" alt="@cause.Name" class="rounded" style="width: 48px; height: 48px; object-fit: cover;" />
+                                        <div>
+                                            <a asp-action="Details" asp-route-id="@cause.CauseId" class="fw-bold text-dark text-decoration-none">@cause.Name</a>
+                                            <span class="text-xs text-muted d-block">Created: @cause.CreatedDate.ToString("dd MMM yyyy")</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-primary">@(cause.NGO?.Name ?? "GIVE-AID")</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">@cause.Category</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success d-block">PKR @cause.RaisedAmount.ToString("N0")</span>
+                                    <span class="text-xs text-muted">Goal: PKR @cause.TargetAmount.ToString("N0")</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-xs fw-bold text-muted">@progress%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form asp-action="ToggleStatus" asp-route-id="@cause.CauseId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="badge border-0 @(cause.IsActive ? "bg-success" : "bg-secondary")" style="cursor: pointer;">
+                                            @(cause.IsActive ? "Active" : "Inactive")
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@cause.CauseId" class="btn btn-outline-primary" title="Details">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@cause.CauseId" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-bullseye fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No causes created yet</h5>
+                <p class="mb-3">Start by creating the first community cause.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">Create Cause</a>
+            </div>
+        }
+    </div>
+</div>

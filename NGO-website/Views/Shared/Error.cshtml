@@ -1,0 +1,28 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+                <i class="fa-solid fa-triangle-exclamation text-danger display-3 mb-3"></i>
+                <h2 class="fw-bold text-dark">An Unexpected Error Occurred</h2>
+                <p class="text-secondary lead fs-6 mb-4">We encountered an issue while processing your request. Please try again or reach out to our support team.</p>
+
+                @if (Model.ShowRequestId)
+                {
+                    <p class="text-xs text-secondary">
+                        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                    </p>
+                }
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4">Homepage</a>
+                    <a asp-controller="HelpCentre" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Help Centre</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

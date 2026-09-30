@@ -1,0 +1,96 @@
+@model NGOFormViewModel
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to NGOs List
+    </a>
+    <h3 class="fw-bold mb-1 text-dark">Edit Organization: @Model.Name</h3>
+    <p class="text-muted mb-0">Update organization profile, contacts, address, and logo.</p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-4">
+        <form asp-action="Edit" asp-route-id="@Model.NGOId" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="NGOId" />
+            <input type="hidden" asp-for="ExistingLogoUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label fw-semibold"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Website" class="form-label fw-semibold"></label>
+                    <input asp-for="Website" class="form-control" />
+                    <span asp-validation-for="Website" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Address" class="form-label fw-semibold"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="LogoFile" class="form-label fw-semibold"></label>
+                    <input asp-for="LogoFile" type="file" class="form-control" accept="image/*" />
+                    <span asp-validation-for="LogoFile" class="text-danger small"></span>
+                    <small class="text-muted">Upload to replace existing logo.</small>
+                </div>
+
+                <div class="col-md-6 d-flex align-items-center gap-3">
+                    @if (!string.IsNullOrEmpty(Model.ExistingLogoUrl))
+                    {
+                        <div>
+                            <span class="text-xs text-muted d-block mb-1">Current Logo:</span>
+                            <img src="@Model.ExistingLogoUrl" alt="Current Logo" class="rounded border p-1" style="height: 50px; width: 50px; object-fit: cover;" />
+                        </div>
+                    }
+                    <div class="form-check form-switch fs-5 pt-3">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive">
+                        <label class="form-check-label fs-6 fw-semibold ms-2" asp-for="IsActive">
+                            Active
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 pt-3 border-top mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-save me-1"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

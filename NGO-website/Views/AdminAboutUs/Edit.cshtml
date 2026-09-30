@@ -1,0 +1,83 @@
+@model AboutUsContent
+@{
+    ViewData["Title"] = $"Edit Section: {Model.Title}";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Sections List
+    </a>
+    <h3 class="fw-bold mb-1 text-dark">Edit Section: @Model.Title</h3>
+    <p class="text-muted mb-0">Update text, subtitles, FontAwesome icon class, or background image.</p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-4">
+        <form asp-action="Edit" asp-route-id="@Model.AboutUsContentId" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="AboutUsContentId" />
+            <input type="hidden" asp-for="ImageUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Title" class="form-label fw-semibold"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Subtitle" class="form-label fw-semibold"></label>
+                    <input asp-for="Subtitle" class="form-control" />
+                    <span asp-validation-for="Subtitle" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IconClass" class="form-label fw-semibold"></label>
+                    <input asp-for="IconClass" class="form-control" placeholder="fa-solid fa-hand-holding-heart" />
+                    <span asp-validation-for="IconClass" class="text-danger small"></span>
+                    <small class="text-muted">FontAwesome icon CSS class name</small>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DisplayOrder" class="form-label fw-semibold"></label>
+                    <input asp-for="DisplayOrder" class="form-control" />
+                    <span asp-validation-for="DisplayOrder" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Content" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Content" class="form-control" rows="8" placeholder="Paragraphs describing this section..."></textarea>
+                    <span asp-validation-for="Content" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Replace Section Media / Image</label>
+                    <input name="imageFile" type="file" class="form-control" accept="image/*" />
+                </div>
+
+                <div class="col-md-6 d-flex align-items-center">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div>
+                            <span class="text-xs text-muted d-block mb-1">Current Media:</span>
+                            <img src="@Model.ImageUrl" alt="Current Media" class="rounded border" style="height: 60px; max-width: 150px; object-fit: cover;" />
+                        </div>
+                    }
+                </div>
+
+                <div class="col-12 pt-3 border-top mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-save me-1"></i> Save Section
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

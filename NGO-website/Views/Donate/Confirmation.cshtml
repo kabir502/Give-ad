@@ -1,0 +1,94 @@
+@model NGO_website.ViewModels.Donations.DonationConfirmationViewModel
+@{
+    ViewData["Title"] = "Donation Submitted";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden text-center p-5">
+                <div class="mb-4">
+                    @if (Model.DonationStatus == DonationStatus.Approved)
+                    {
+                        <div class="bg-success text-white rounded-circle mx-auto d-flex align-items-center justify-content-center shadow" style="width: 80px; height: 80px;">
+                            <i class="fa-solid fa-check fs-1"></i>
+                        </div>
+                        <h2 class="fw-bold text-success mt-3">Donation Confirmed!</h2>
+                    }
+                    else
+                    {
+                        <div class="bg-warning text-dark rounded-circle mx-auto d-flex align-items-center justify-content-center shadow" style="width: 80px; height: 80px;">
+                            <i class="fa-solid fa-clock-rotate-left fs-1"></i>
+                        </div>
+                        <h2 class="fw-bold text-dark mt-3">Donation Submitted Successfully!</h2>
+                    }
+                    <p class="text-secondary fs-6">@Model.Message</p>
+                </div>
+
+                <div class="bg-light p-4 rounded-4 border mb-4 text-start">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Donation Number</span>
+                            <div class="fs-5 fw-bold text-primary">@Model.DonationNumber</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Payment Reference</span>
+                            <div class="fs-5 fw-bold text-dark">@Model.PaymentReference</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Amount</span>
+                            <div class="fs-4 fw-bold text-success">PKR @Model.Amount.ToString("N2")</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Payment Method</span>
+                            <div class="fw-semibold text-dark">@Model.PaymentMethod</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Welfare Cause</span>
+                            <div class="fw-semibold text-dark">@Model.CauseName</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Recipient NGO</span>
+                            <div class="fw-semibold text-dark">@Model.NGOName</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Transaction ID</span>
+                            <div class="fw-semibold text-dark">@Model.TransactionId</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-secondary text-xs text-uppercase fw-bold">Verification Status</span>
+                            <div>
+                                @if (Model.DonationStatus == DonationStatus.Approved)
+                                {
+                                    <span class="badge bg-success px-3 py-2 fs-6">Verified & Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark px-3 py-2 fs-6">Pending Verification</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 justify-content-center">
+                    @if (Model.DonationStatus == DonationStatus.Approved)
+                    {
+                        <a asp-controller="Donate" asp-action="Receipt" asp-route-id="@Model.DonationId" class="btn btn-primary btn-lg rounded-pill px-4 fw-semibold shadow-sm">
+                            <i class="fa-solid fa-file-invoice-dollar me-2"></i> View & Print Receipt
+                        </a>
+                    }
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="UserDashboard" asp-action="MyDonations" class="btn btn-outline-primary btn-lg rounded-pill px-4 fw-semibold">
+                            <i class="fa-solid fa-list-check me-2"></i> My Donations History
+                        </a>
+                    }
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

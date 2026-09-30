@@ -1,0 +1,97 @@
+@model List<ContactMessage>
+@{
+    ViewData["Title"] = "Contact Inquiries";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Contact Messages & Inquiries</h3>
+        <p class="text-muted mb-0">Public messages submitted through the Contact Us form on the portal.</p>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sender</th>
+                            <th>Contact</th>
+                            <th>Subject</th>
+                            <th>Received Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var msg in Model)
+                        {
+                            <tr class="@(!msg.IsRead ? "table-light fw-semibold" : "")">
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (!msg.IsRead)
+                                        {
+                                            <span class="badge bg-danger rounded-circle p-1" title="Unread"><span class="visually-hidden">New</span></span>
+                                        }
+                                        <span class="text-dark">@msg.Name</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-dark d-block">@msg.Email</span>
+                                    <span class="text-xs text-muted">@(msg.Phone ?? "No phone")</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@msg.ContactMessageId" class="text-dark text-decoration-none d-block">
+                                        @msg.Subject
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="text-dark text-xs">@msg.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(msg.AdminReply))
+                                    {
+                                        <span class="badge bg-success"><i class="fa-solid fa-reply me-1"></i>Replied</span>
+                                    }
+                                    else if (msg.IsRead)
+                                    {
+                                        <span class="badge bg-secondary">Read</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">New / Unread</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@msg.ContactMessageId" class="btn btn-outline-primary" title="View & Reply">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@msg.ContactMessageId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-envelope-open fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">Inbox is empty</h5>
+                <p class="mb-0">No contact messages received from the portal.</p>
+            </div>
+        }
+    </div>
+</div>

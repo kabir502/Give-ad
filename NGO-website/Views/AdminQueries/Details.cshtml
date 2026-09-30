@@ -1,0 +1,174 @@
+@model Query
+@{
+    ViewData["Title"] = $"Query #{Model.QueryId} - {Model.Subject}";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Helpdesk
+    </a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">Ticket #QRY-@Model.QueryId: @Model.Subject</h3>
+            <span class="badge bg-secondary me-2">Category: @Model.Category</span>
+            <span class="text-muted text-xs">Submitted on @Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-xs text-muted fw-bold">Current Status:</span>
+            @if (Model.Status == QueryStatus.Open)
+            {
+                <span class="badge bg-danger fs-6">Open</span>
+            }
+            else if (Model.Status == QueryStatus.InProgress)
+            {
+                <span class="badge bg-warning text-dark fs-6">In Progress</span>
+            }
+            else if (Model.Status == QueryStatus.Resolved)
+            {
+                <span class="badge bg-success fs-6">Resolved</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary fs-6">Closed</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Conversation Stream & Reply Box -->
+    <div class="col-lg-8">
+        <!-- Original Inquiry -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">
+                        @Model.FullName.Substring(0, 1).ToUpper()
+                    </span>
+                    <div>
+                        <h6 class="mb-0 fw-bold text-dark">@Model.FullName</h6>
+                        <span class="text-xs text-muted">@Model.Email</span>
+                    </div>
+                </div>
+                <span class="text-xs text-muted">@Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-dark leading-relaxed mb-0">@Model.Message</p>
+            </div>
+        </div>
+
+        <!-- Replies History -->
+        @if (Model.Replies != null && Model.Replies.Any())
+        {
+            <div class="mb-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-comments text-primary me-2"></i>Response History</h6>
+                @foreach (var r in Model.Replies.OrderBy(x => x.RepliedAt))
+                {
+                    <div class="card border-0 shadow-sm rounded-3 bg-light border-start border-4 border-primary mb-3">
+                        <div class="card-header bg-transparent border-0 py-2 px-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-primary text-sm"><i class="fa-solid fa-user-shield me-1"></i>@(r.AdminName ?? "GIVE-AID Support")</span>
+                            <span class="text-xs text-muted">@r.RepliedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+                        </div>
+                        <div class="card-body py-2 px-3">
+                            <p class="text-dark mb-0 leading-relaxed">@r.Message</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- Reply Form -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-paper-plane text-primary me-2"></i>Post Reply & Update Ticket</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Reply" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="queryId" value="@Model.QueryId" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Official Reply Message</label>
+                        <textarea name="replyMessage" class="form-control" rows="5" placeholder="Type your response to the user here. An automated email with your response will be sent to the user..." required></textarea>
+                    </div>
+
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-xs fw-bold text-muted">Set New Ticket Status</label>
+                            <select name="newStatus" class="form-select form-select-sm">
+                                <option value="Resolved" selected>Mark as Resolved</option>
+                                <option value="InProgress">Keep In Progress</option>
+                                <option value="Closed">Close Ticket</option>
+                                <option value="Open">Keep Open</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-end pt-3">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Send Reply & Email
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Status & Contact Info -->
+    <div class="col-lg-4">
+        <!-- Quick Status Update -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-sliders text-secondary me-2"></i>Quick Status Change</h6>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="ChangeStatus" method="post" class="d-flex flex-column gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="queryId" value="@Model.QueryId" />
+
+                    <button type="submit" name="status" value="@QueryStatus.InProgress" class="btn btn-outline-warning btn-sm text-start">
+                        <i class="fa-solid fa-clock me-2"></i> Move to In Progress
+                    </button>
+                    <button type="submit" name="status" value="@QueryStatus.Resolved" class="btn btn-outline-success btn-sm text-start">
+                        <i class="fa-solid fa-check me-2"></i> Mark as Resolved
+                    </button>
+                    <button type="submit" name="status" value="@QueryStatus.Closed" class="btn btn-outline-secondary btn-sm text-start">
+                        <i class="fa-solid fa-lock me-2"></i> Close Ticket
+                    </button>
+                    <button type="submit" name="status" value="@QueryStatus.Open" class="btn btn-outline-danger btn-sm text-start">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Reopen Ticket
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sender Profile Info -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h6 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-user text-info me-2"></i>Sender Information</h6>
+            </div>
+            <div class="card-body p-4">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Name:</span>
+                        <span class="fw-semibold text-dark">@Model.FullName</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Email:</span>
+                        <a href="mailto:@Model.Email" class="text-primary text-decoration-none">@Model.Email</a>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Phone:</span>
+                        <span class="text-dark">@(Model.Phone ?? "N/A")</span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 d-flex justify-content-between">
+                        <span class="text-muted text-xs">Account Type:</span>
+                        <span class="badge @(Model.UserId != null ? "bg-info text-dark" : "bg-secondary")">
+                            @(Model.UserId != null ? "Registered User" : "Public Visitor")
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

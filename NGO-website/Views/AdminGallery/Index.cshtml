@@ -1,0 +1,105 @@
+@model List<GalleryItem>
+@{
+    ViewData["Title"] = "Gallery Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Impact Photo Gallery</h3>
+        <p class="text-muted mb-0">Manage visual proof of welfare activities, field distributions, and beneficiary stories.</p>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add Photo
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Photo & Title</th>
+                            <th>Category</th>
+                            <th>Linked NGO / Programme</th>
+                            <th>Date Taken</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@item.ImageUrl" alt="@item.Title" class="rounded border" style="width: 60px; height: 45px; object-fit: cover;" />
+                                        <div>
+                                            <span class="fw-bold text-dark d-block">@item.Title</span>
+                                            <span class="text-xs text-muted">ID: #@item.GalleryItemId</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">@item.Category</span>
+                                </td>
+                                <td>
+                                    @if (item.NGO != null)
+                                    {
+                                        <span class="text-primary fw-semibold d-block text-xs">NGO: @item.NGO.Name</span>
+                                    }
+                                    @if (item.Programme != null)
+                                    {
+                                        <span class="text-info text-xs d-block">Prog: @item.Programme.Title</span>
+                                    }
+                                    @if (item.NGO == null && item.Programme == null)
+                                    {
+                                        <span class="text-muted text-xs">Platform General</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="text-dark">@item.DateTaken.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td>
+                                    <form asp-action="ToggleStatus" asp-route-id="@item.GalleryItemId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="badge border-0 @(item.IsActive ? "bg-success" : "bg-secondary")" style="cursor: pointer;">
+                                            @(item.IsActive ? "Active" : "Inactive")
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Edit" asp-route-id="@item.GalleryItemId" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.GalleryItemId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this photo?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-outline-danger" title="Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-images fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">Gallery is empty</h5>
+                <p class="mb-3">Upload activity pictures from the field to display on the public gallery.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">Upload Photo</a>
+            </div>
+        }
+    </div>
+</div>

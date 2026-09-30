@@ -1,0 +1,105 @@
+@model CampaignFormViewModel
+@{
+    ViewData["Title"] = "Create Campaign";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Campaigns
+    </a>
+    <h3 class="fw-bold mb-1 text-dark">Create Campaign Appeal</h3>
+    <p class="text-muted mb-0">Set up a time-delimited welfare project appeal with specific targets.</p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="NGOId" class="form-label fw-semibold"></label>
+                    <select asp-for="NGOId" class="form-select" asp-items="Model.NgoList">
+                        <option value="">-- Select Partner NGO --</option>
+                    </select>
+                    <span asp-validation-for="NGOId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CauseId" class="form-label fw-semibold"></label>
+                    <select asp-for="CauseId" class="form-select" asp-items="Model.CauseList">
+                        <option value="">-- Select Linked Cause --</option>
+                    </select>
+                    <span asp-validation-for="CauseId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-8">
+                    <label asp-for="Title" class="form-label fw-semibold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. Winter Clothes & Blankets Drive 2026" />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="GoalAmount" class="form-label fw-semibold"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">PKR</span>
+                        <input asp-for="GoalAmount" class="form-control" placeholder="1000000" />
+                    </div>
+                    <span asp-validation-for="GoalAmount" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                    <input asp-for="StartDate" type="date" class="form-control" />
+                    <span asp-validation-for="StartDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                    <input asp-for="EndDate" type="date" class="form-control" />
+                    <span asp-validation-for="EndDate" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label asp-for="Status" class="form-label fw-semibold"></label>
+                    <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<CampaignStatus>()"></select>
+                    <span asp-validation-for="Status" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5" placeholder="Detailed campaign objectives, beneficiary info, logistics details..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ImageFile" class="form-label fw-semibold"></label>
+                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                    <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6 d-flex align-items-center pt-3">
+                    <div class="form-check form-switch fs-5">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" checked>
+                        <label class="form-check-label fs-6 fw-semibold ms-2" asp-for="IsActive">
+                            Active on Public Portal
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 pt-3 border-top mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-check me-1"></i> Launch Campaign
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

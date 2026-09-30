@@ -1,0 +1,98 @@
+@model NGO_website.ViewModels.Home.ContactViewModel
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+            <i class="fa-solid fa-envelope-open-text me-1"></i> Get in Touch With Us
+        </span>
+        <h1 class="fw-extrabold text-dark">Contact GIVE-AID Team</h1>
+        <p class="text-secondary lead fs-6">Have questions, feedback, or need assistance? Send us a message and our team will get back to you promptly.</p>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Form Column -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                <h4 class="fw-bold text-dark mb-4">Send Us a Message</h4>
+
+                <form asp-controller="Contact" asp-action="Index" method="post" class="prevent-duplicate-submit">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Name" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Your full name" />
+                            <span asp-validation-for="Name" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control" placeholder="your.email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+92 300 0000000" />
+                            <span asp-validation-for="Phone" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Subject" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Subject" class="form-control" placeholder="Inquiry subject" />
+                            <span asp-validation-for="Subject" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Message" class="form-label fw-semibold text-secondary"></label>
+                            <textarea asp-for="Message" class="form-control" rows="5" placeholder="Write your message or question in detail..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger text-xs"></span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm mt-4">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contact Information Column -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-dark text-white mb-4">
+                <h4 class="fw-bold mb-4 text-warning">Headquarters</h4>
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <i class="fa-solid fa-location-dot fs-4 text-danger mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold m-0 text-white">GIVE-AID Secretariat</h6>
+                        <p class="text-secondary text-sm m-0">Level 4, Executive Heights, Blue Area, Islamabad, Pakistan</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <i class="fa-solid fa-phone fs-4 text-primary mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold m-0 text-white">Direct Phone</h6>
+                        <p class="text-secondary text-sm m-0">+92 21 111-GIVEAID (4483-243)</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <i class="fa-solid fa-envelope fs-4 text-info mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold m-0 text-white">Official Email</h6>
+                        <p class="text-secondary text-sm m-0">info@giveaid.local / support@giveaid.local</p>
+                    </div>
+                </div>
+                <hr class="border-secondary opacity-50 my-4" />
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success">Open</span>
+                    <small class="text-secondary">Mon - Fri: 09:00 AM - 06:00 PM PKT</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

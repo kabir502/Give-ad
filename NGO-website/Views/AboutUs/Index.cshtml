@@ -1,0 +1,150 @@
+@model IEnumerable<NGO_website.Models.Entities.AboutUsContent>
+@{
+    ViewData["Title"] = "About Us";
+    var sections = Model.ToDictionary(s => s.SectionKey, s => s);
+}
+
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+            <i class="fa-solid fa-circle-info me-1"></i> Who We Are & What Drives Us
+        </span>
+        <h1 class="fw-extrabold text-dark">About GIVE-AID Platform</h1>
+        <p class="text-secondary lead fs-6">A transparent, united national coalition of NGOs dedicated to transforming lives through philanthropic technology.</p>
+    </div>
+
+    <!-- 1. What We Do Section -->
+    @if (sections.TryGetValue("WhatWeDo", out var whatWeDo))
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-white">
+            <div class="row g-0 align-items-center">
+                <div class="col-lg-6 p-4 p-lg-5">
+                    <span class="badge bg-primary px-3 py-1 rounded-pill mb-2">What We Do</span>
+                    <h2 class="fw-bold text-dark mb-3">@whatWeDo.Title</h2>
+                    <h6 class="text-primary fw-semibold mb-3">@whatWeDo.Subtitle</h6>
+                    <p class="text-secondary fs-6 lh-lg m-0" style="white-space: pre-line;">@whatWeDo.Content</p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="@(string.IsNullOrEmpty(whatWeDo.ImageUrl) ? "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&auto=format&fit=crop&q=80" : whatWeDo.ImageUrl)" class="w-100 h-100 object-fit-cover" style="min-height: 380px;" alt="What We Do" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- 2. Our Mission Section -->
+    @if (sections.TryGetValue("OurMission", out var ourMission))
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-white">
+            <div class="row g-0 align-items-center flex-lg-row-reverse">
+                <div class="col-lg-6 p-4 p-lg-5">
+                    <span class="badge bg-success px-3 py-1 rounded-pill mb-2">Our Mission & Vision</span>
+                    <h2 class="fw-bold text-dark mb-3">@ourMission.Title</h2>
+                    <h6 class="text-success fw-semibold mb-3">@ourMission.Subtitle</h6>
+                    <p class="text-secondary fs-6 lh-lg m-0" style="white-space: pre-line;">@ourMission.Content</p>
+                </div>
+                <div class="col-lg-6">
+                    <img src="@(string.IsNullOrEmpty(ourMission.ImageUrl) ? "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&auto=format&fit=crop&q=80" : ourMission.ImageUrl)" class="w-100 h-100 object-fit-cover" style="min-height: 380px;" alt="Our Mission" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- 3. Our Team & 4. Career With Us Grid -->
+    <div class="row g-4 mb-5">
+        @if (sections.TryGetValue("OurTeam", out var ourTeam))
+        {
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-users fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-primary-subtle text-primary">Leadership</span>
+                            <h4 class="fw-bold text-dark m-0">@ourTeam.Title</h4>
+                        </div>
+                    </div>
+                    <h6 class="text-secondary fw-semibold mb-3">@ourTeam.Subtitle</h6>
+                    <p class="text-secondary text-sm lh-lg m-0" style="white-space: pre-line;">@ourTeam.Content</p>
+                </div>
+            </div>
+        }
+
+        @if (sections.TryGetValue("CareerWithUs", out var career))
+        {
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-briefcase fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-warning-subtle text-dark">Join Our Family</span>
+                            <h4 class="fw-bold text-dark m-0">@career.Title</h4>
+                        </div>
+                    </div>
+                    <h6 class="text-secondary fw-semibold mb-3">@career.Subtitle</h6>
+                    <p class="text-secondary text-sm lh-lg m-0" style="white-space: pre-line;">@career.Content</p>
+                    <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-warning text-dark fw-semibold btn-sm rounded-pill align-self-start mt-4 px-3">
+                        Submit Volunteer CV &rarr;
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- 5. Our Achievements & 6. Our Supporters -->
+    <div class="row g-4 mb-5">
+        @if (sections.TryGetValue("OurAchievements", out var achievements))
+        {
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-trophy fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-success-subtle text-success">Milestones</span>
+                            <h4 class="fw-bold text-dark m-0">@achievements.Title</h4>
+                        </div>
+                    </div>
+                    <h6 class="text-secondary fw-semibold mb-3">@achievements.Subtitle</h6>
+                    <p class="text-secondary text-sm lh-lg m-0" style="white-space: pre-line;">@achievements.Content</p>
+                </div>
+            </div>
+        }
+
+        @if (sections.TryGetValue("OurSupporters", out var supporters))
+        {
+            <div class="col-lg-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                            <i class="fa-solid fa-heart fs-5"></i>
+                        </div>
+                        <div>
+                            <span class="badge bg-danger-subtle text-danger">Gratitude</span>
+                            <h4 class="fw-bold text-dark m-0">@supporters.Title</h4>
+                        </div>
+                    </div>
+                    <h6 class="text-secondary fw-semibold mb-3">@supporters.Subtitle</h6>
+                    <p class="text-secondary text-sm lh-lg m-0" style="white-space: pre-line;">@supporters.Content</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- 7. Read About Us & Media Coverage -->
+    @if (sections.TryGetValue("ReadAboutUs", out var readAbout))
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-light border">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <i class="fa-solid fa-newspaper fs-3 text-primary"></i>
+                <h4 class="fw-bold text-dark m-0">@readAbout.Title</h4>
+            </div>
+            <h6 class="text-primary fw-semibold mb-3">@readAbout.Subtitle</h6>
+            <p class="text-secondary fs-6 lh-lg m-0" style="white-space: pre-line;">@readAbout.Content</p>
+        </div>
+    }
+</div>

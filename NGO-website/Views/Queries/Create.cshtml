@@ -1,0 +1,75 @@
+@model NGO_website.Models.Entities.Query
+@{
+    ViewData["Title"] = "Raise a Support Query";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-primary px-3 py-1 rounded-pill">Support Ticket</span>
+                </div>
+                <h2 class="fw-bold text-dark mb-2">Raise a Query</h2>
+                <p class="text-secondary text-sm mb-4">Please provide details about your issue or question. Our administrators will review and reply with an email notification.</p>
+
+                <form asp-controller="Queries" asp-action="Create" method="post" class="prevent-duplicate-submit">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Your name" />
+                            <span asp-validation-for="FullName" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control" placeholder="Where replies will be sent" />
+                            <span asp-validation-for="Email" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+92 300 0000000" />
+                            <span asp-validation-for="Phone" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Category" class="form-label fw-semibold text-secondary"></label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="Donation Support">Donation Support</option>
+                                <option value="Payment Verification Issue">Payment Verification Issue</option>
+                                <option value="Programme Inquiry">Programme Inquiry</option>
+                                <option value="Receipt Request">Receipt Request</option>
+                                <option value="General Question">General Question</option>
+                                <option value="Feedback & Suggestions">Feedback & Suggestions</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Subject" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Subject" class="form-control" placeholder="e.g. EasyPaisa payment pending verification for 2 days" />
+                            <span asp-validation-for="Subject" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Message" class="form-label fw-semibold text-secondary"></label>
+                            <textarea asp-for="Message" class="form-control" rows="5" placeholder="Explain your query clearly, including any Donation ID or TID if applicable..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger text-xs"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Submit Query
+                        </button>
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg rounded-pill px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

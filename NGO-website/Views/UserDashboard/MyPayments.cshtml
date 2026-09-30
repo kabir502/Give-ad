@@ -1,0 +1,79 @@
+@model IEnumerable<NGO_website.Models.Entities.Payment>
+@{
+    ViewData["Title"] = "My Payments";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark m-0">My Payment Transactions</h2>
+            <p class="text-secondary text-sm m-0">Reconciliation records for your card, EasyPaisa, and JazzCash submissions.</p>
+        </div>
+        <a asp-controller="Donate" asp-action="Index" class="btn btn-primary rounded-pill px-4 fw-semibold">
+            <i class="fa-solid fa-plus me-1"></i> New Payment
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <i class="fa-solid fa-receipt text-secondary display-4 mb-3"></i>
+            <h5 class="fw-bold text-dark">No payment records found</h5>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Payment Reference</th>
+                            <th>Donation #</th>
+                            <th>Method</th>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Submitted Date</th>
+                            <th>Verification Status</th>
+                            <th>Admin Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold text-dark">@p.PaymentReference</td>
+                                <td class="fw-semibold text-primary">@(p.Donation?.DonationNumber ?? "N/A")</td>
+                                <td>
+                                    <span class="badge bg-light text-secondary border">@p.PaymentMethod</span>
+                                    @if (!string.IsNullOrEmpty(p.MaskedCardNumber))
+                                    {
+                                        <small class="d-block text-muted text-xs">@p.MaskedCardNumber</small>
+                                    }
+                                </td>
+                                <td><code>@p.TransactionId</code></td>
+                                <td class="fw-bold text-success">PKR @p.Amount.ToString("N2")</td>
+                                <td class="text-secondary text-sm">@p.SubmittedDate.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                <td>
+                                    @if (p.Status == PaymentStatus.Verified)
+                                    {
+                                        <span class="badge bg-success px-3 py-2">Verified</span>
+                                    }
+                                    else if (p.Status == PaymentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger px-3 py-2">Rejected</span>
+                                    }
+                                </td>
+                                <td class="text-secondary text-xs">@(p.AdminRemarks ?? "—")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

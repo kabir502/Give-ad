@@ -1,0 +1,194 @@
+@model PaymentVerificationViewModel
+@{
+    ViewData["Title"] = "Payment Verification";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Payment Verification Queue</h3>
+        <p class="text-muted mb-0">Verify offline bank transfers, EasyPaisa, JazzCash transaction slips, and card receipts.</p>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-xs text-uppercase text-muted fw-bold">Pending Review</span>
+                    <h4 class="fw-bold text-warning mb-0">@Model.TotalPending</h4>
+                </div>
+                <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                    <i class="fa-solid fa-clock-rotate-left fa-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-xs text-uppercase text-muted fw-bold">Approved / Verified</span>
+                    <h4 class="fw-bold text-success mb-0">@Model.TotalVerified</h4>
+                </div>
+                <div class="bg-success bg-opacity-10 text-success rounded-3 p-3">
+                    <i class="fa-solid fa-circle-check fa-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-xs text-uppercase text-muted fw-bold">Rejected Slips</span>
+                    <h4 class="fw-bold text-danger mb-0">@Model.TotalRejected</h4>
+                </div>
+                <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-3">
+                    <i class="fa-solid fa-circle-xmark fa-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-xs text-uppercase text-muted fw-bold">Total Verified Funds</span>
+                    <h4 class="fw-bold text-primary mb-0">PKR @Model.TotalVerifiedAmount.ToString("N0")</h4>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                    <i class="fa-solid fa-wallet fa-lg"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label text-xs fw-bold text-muted">Search Transaction / Donor / Ref</label>
+                <input type="text" name="search" value="@Model.SearchTerm" class="form-control form-control-sm" placeholder="e.g. TXN-12345, John, or Ref...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-xs fw-bold text-muted">Status</label>
+                <select name="status" class="form-select form-select-sm" asp-for="StatusFilter" asp-items="Html.GetEnumSelectList<PaymentStatus>()">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-xs fw-bold text-muted">Payment Method</label>
+                <select name="method" class="form-select form-select-sm" asp-for="MethodFilter" asp-items="Html.GetEnumSelectList<PaymentMethodType>()">
+                    <option value="">All Methods</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-xs fw-bold text-muted">From Date</label>
+                <input type="date" name="fromDate" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-xs fw-bold text-muted">To Date</label>
+                <input type="date" name="toDate" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm">
+            </div>
+            <div class="col-md-1 d-flex gap-1">
+                <button type="submit" class="btn btn-primary btn-sm w-100"><i class="fa-solid fa-filter"></i></button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="fa-solid fa-rotate-left"></i></a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Payments Table -->
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model.Payments != null && Model.Payments.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Payment Ref & Date</th>
+                            <th>Donor Name & Email</th>
+                            <th>Cause / NGO</th>
+                            <th>Method & TXN ID</th>
+                            <th>Amount</th>
+                            <th>Proof Slip</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Payments)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-dark d-block">@item.PaymentReference</span>
+                                    <span class="text-xs text-muted">@item.SubmittedDate.ToString("dd MMM yyyy, hh:mm tt")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-dark d-block">@(item.Donation?.DonorName ?? "Anonymous")</span>
+                                    <span class="text-xs text-muted">@(item.Donation?.DonorEmail ?? "N/A")</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-medium d-block">@(item.Donation?.Cause?.Name ?? "General Welfare")</span>
+                                    <span class="text-xs text-primary">@(item.Donation?.NGO?.Name ?? "GIVE-AID")</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary mb-1">@item.PaymentMethod</span>
+                                    <span class="text-xs text-muted d-block font-monospace">@item.TransactionId</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark">PKR @item.Amount.ToString("N0")</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ReceiptFilePath))
+                                    {
+                                        <a href="@item.ReceiptFilePath" target="_blank" class="btn btn-xs btn-outline-info">
+                                            <i class="fa-solid fa-image me-1"></i> View Slip
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-xs text-muted">No slip</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Status == PaymentStatus.Verified)
+                                    {
+                                        <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Verified</span>
+                                    }
+                                    else if (item.Status == PaymentStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Pending</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger"><i class="fa-solid fa-xmark me-1"></i>Rejected</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@item.PaymentId" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-eye me-1"></i> Review
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-receipt fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No payments found</h5>
+                <p class="mb-0">No payment transaction records match your filter criteria.</p>
+            </div>
+        }
+    </div>
+</div>

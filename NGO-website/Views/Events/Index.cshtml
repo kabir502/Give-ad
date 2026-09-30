@@ -1,0 +1,66 @@
+@model IEnumerable<NGO_website.Models.Entities.Event>
+@{
+    ViewData["Title"] = "Charity & Welfare Events";
+    var search = ViewData["Search"] as string;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+            <i class="fa-solid fa-bullhorn me-1"></i> Gatherings, Galas & Summits
+        </span>
+        <h1 class="fw-extrabold text-dark">Upcoming Events</h1>
+        <p class="text-secondary lead fs-6">Join our humanitarian gatherings, charity galas, awareness conferences, and donor appreciation summits.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+        <form asp-controller="Events" asp-action="Index" method="get" class="row g-3 align-items-center">
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass text-secondary"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search event by name, city, or venue..." value="@search" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold">Search Events</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5 bg-white rounded-4 shadow-sm">
+                <i class="fa-solid fa-calendar-xmark text-secondary display-4 mb-3"></i>
+                <h4 class="fw-bold text-dark">No events found</h4>
+                <p class="text-secondary">Check back soon for upcoming conferences and summits.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var evt in Model)
+            {
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 d-flex flex-md-row">
+                        <img src="@(string.IsNullOrEmpty(evt.ImageUrl) ? "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80" : evt.ImageUrl)" style="width: 220px; min-height: 200px; object-fit: cover;" class="d-none d-md-block" alt="@evt.Title" />
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-warning text-dark"><i class="fa-regular fa-clock me-1"></i> @evt.EventDate.ToString("ddd, dd MMM yyyy, hh:mm tt")</span>
+                                <small class="text-secondary fw-semibold">@(evt.NGO?.Name ?? "GIVE-AID")</small>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">@evt.Title</h5>
+                            <p class="text-secondary text-sm flex-grow-1">@(evt.Description.Length > 120 ? evt.Description.Substring(0, 117) + "..." : evt.Description)</p>
+                            <div class="text-xs text-secondary mb-3">
+                                <i class="fa-solid fa-location-dot text-danger me-1"></i> @evt.Location
+                            </div>
+                            <a asp-controller="Events" asp-action="Details" asp-route-id="@evt.EventId" class="btn btn-outline-primary btn-sm rounded-pill align-self-start px-4">
+                                Event Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

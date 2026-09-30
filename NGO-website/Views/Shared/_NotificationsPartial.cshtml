@@ -1,0 +1,51 @@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-4 border-success my-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-circle-check fs-4 me-3 text-success"></i>
+            <div>
+                <strong>Success!</strong> @TempData["SuccessMessage"]
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 border-start border-4 border-danger my-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-circle-exclamation fs-4 me-3 text-danger"></i>
+            <div>
+                <strong>Error!</strong> @TempData["ErrorMessage"]
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm border-0 border-start border-4 border-warning my-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-triangle-exclamation fs-4 me-3 text-warning"></i>
+            <div>
+                <strong>Notice:</strong> @TempData["WarningMessage"]
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show shadow-sm border-0 border-start border-4 border-info my-3" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fa-solid fa-circle-info fs-4 me-3 text-info"></i>
+            <div>
+                @TempData["InfoMessage"]
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

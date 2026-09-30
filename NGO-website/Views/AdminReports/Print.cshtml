@@ -1,0 +1,102 @@
+@model ReportResultViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Financial Report Audit - GIVE-AID</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        @@media print {
+            .no-print { display: none !important; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body class="p-4 bg-white">
+    <div class="no-print mb-4 d-flex justify-content-between align-items-center pb-3 border-bottom">
+        <div>
+            <a href="javascript:window.close()" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-arrow-left me-1"></i> Close</a>
+        </div>
+        <div>
+            <button onclick="window.print()" class="btn btn-primary btn-sm"><i class="fa-solid fa-print me-1"></i> Print / Save as PDF</button>
+        </div>
+    </div>
+
+    <!-- Letterhead -->
+    <div class="row align-items-center mb-4 pb-3 border-bottom">
+        <div class="col-8">
+            <h2 class="fw-bold text-primary mb-0">GIVE-AID Welfare Platform</h2>
+            <p class="text-muted mb-0">Official Audited Financial & Welfare Statement</p>
+            <small class="text-muted">Report Type: <strong>@Model.Filter.ReportType</strong> | Generated on: @DateTime.UtcNow.ToString("dd MMM yyyy, hh:mm tt") UTC</small>
+        </div>
+        <div class="col-4 text-end">
+            <h5 class="fw-bold text-dark mb-1">AUDIT COPY</h5>
+            <small class="text-muted">Total Records: @Model.TotalRecords</small>
+        </div>
+    </div>
+
+    <!-- Summary Box -->
+    <div class="row g-3 mb-4">
+        <div class="col-6">
+            <div class="p-3 border rounded bg-light">
+                <span class="text-uppercase text-xs text-muted fw-bold d-block">Scope & Date Range</span>
+                <span class="fw-semibold">
+                    @(Model.Filter.FromDate?.ToString("dd MMM yyyy") ?? "Start") to @(Model.Filter.ToDate?.ToString("dd MMM yyyy") ?? "Present")
+                </span>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="p-3 border rounded bg-light text-end">
+                <span class="text-uppercase text-xs text-muted fw-bold d-block">Total Financial Sum</span>
+                <span class="fs-5 fw-bold text-success">PKR @Model.TotalAmount.ToString("N0")</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <table class="table table-bordered table-striped table-sm text-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Reference #</th>
+                <th>Date</th>
+                <th>Donor Name</th>
+                <th>NGO</th>
+                <th>Cause</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th class="text-end">Amount (PKR)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Rows)
+            {
+                <tr>
+                    <td class="font-monospace">@row.ReferenceNumber</td>
+                    <td>@row.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@row.DonorName</td>
+                    <td>@row.NGOName</td>
+                    <td>@row.CauseName</td>
+                    <td>@row.PaymentMethod</td>
+                    <td>@row.Status</td>
+                    <td class="text-end fw-semibold">@row.Amount.ToString("N0")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="fw-bold table-light">
+                <td colspan="7" class="text-end">Grand Total:</td>
+                <td class="text-end text-success">PKR @Model.TotalAmount.ToString("N0")</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mt-5 pt-4 text-muted text-xs border-top text-center">
+        This document is an official system generated report from the GIVE-AID Welfare Platform &bull; Confidential &bull; For internal and audit purposes only.
+    </div>
+</body>
+</html>

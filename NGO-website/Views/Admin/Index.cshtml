@@ -1,0 +1,421 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
+
+<!-- Page Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Executive Overview</h3>
+        <p class="text-muted mb-0">Real-time performance analytics, donations tally, and pending approval workflows.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-controller="AdminPayments" asp-action="Index" class="btn btn-warning shadow-sm">
+            <i class="fa-solid fa-receipt me-1"></i> Verify Payments
+            @if (Model.PendingPaymentsCount > 0)
+            {
+                <span class="badge bg-danger ms-1">@Model.PendingPaymentsCount</span>
+            }
+        </a>
+        <a asp-controller="AdminReports" asp-action="Index" class="btn btn-outline-primary shadow-sm">
+            <i class="fa-solid fa-chart-line me-1"></i> Financial Reports
+        </a>
+        <a asp-controller="AdminCauses" asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add Cause
+        </a>
+    </div>
+</div>
+
+<!-- Primary Metric Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-uppercase text-xs fw-bold text-muted">Total Funds Raised</span>
+                    <h3 class="fw-bolder text-success my-1">PKR @Model.TotalAmountReceived.ToString("N0")</h3>
+                    <span class="text-xs text-muted"><i class="fa-solid fa-circle-check text-success me-1"></i>Approved Donations</span>
+                </div>
+                <div class="bg-success bg-opacity-10 text-success rounded-3 p-3">
+                    <i class="fa-solid fa-hand-holding-dollar fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-uppercase text-xs fw-bold text-muted">Pending Verification</span>
+                    <h3 class="fw-bolder text-warning my-1">@Model.PendingPaymentsCount</h3>
+                    <a asp-controller="AdminPayments" asp-action="Index" asp-route-status="1" class="text-xs text-warning text-decoration-none fw-semibold">
+                        Review pending slips <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3">
+                    <i class="fa-solid fa-hourglass-half fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-uppercase text-xs fw-bold text-muted">Total NGOs & Causes</span>
+                    <h3 class="fw-bolder text-primary my-1">@Model.TotalNGOs <span class="fs-6 text-muted fw-normal">NGOs / @Model.TotalCauses Causes</span></h3>
+                    <span class="text-xs text-muted">@Model.TotalCampaigns Active Campaigns</span>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3">
+                    <i class="fa-solid fa-bullseye fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-uppercase text-xs fw-bold text-muted">Registered Users</span>
+                    <h3 class="fw-bolder text-info my-1">@Model.TotalUsers</h3>
+                    <span class="text-xs text-muted">@Model.TotalDonations Total Donation Records</span>
+                </div>
+                <div class="bg-info bg-opacity-10 text-info rounded-3 p-3">
+                    <i class="fa-solid fa-users fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Charts Section -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-header bg-transparent border-0 pt-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-area text-primary me-2"></i>Monthly Donation Trend (PKR)</h5>
+                <span class="badge bg-light text-dark border">Last 6 Months</span>
+            </div>
+            <div class="card-body p-4">
+                <div style="height: 290px;">
+                    <canvas id="monthlyDonationsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100 bg-white">
+            <div class="card-header bg-transparent border-0 pt-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-pie text-success me-2"></i>Top Causes Raised</h5>
+            </div>
+            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                <div style="height: 240px;">
+                    <canvas id="causeDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Payments & Recent Donations Tables -->
+<div class="row g-4 mb-4">
+    <!-- Pending Payments Approvals Queue -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="fa-solid fa-receipt text-warning me-2"></i>Pending Manual Approvals
+                </h5>
+                <a asp-controller="AdminPayments" asp-action="Index" asp-route-status="1" class="btn btn-sm btn-outline-warning">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.PendingPayments != null && Model.PendingPayments.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reference / TXN</th>
+                                    <th>Donor / Cause</th>
+                                    <th>Method</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in Model.PendingPayments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-dark d-block">@p.PaymentReference</span>
+                                            <span class="text-xs text-muted">@p.TransactionId</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-dark d-block">@(p.Donation?.DonorName ?? "Anonymous")</span>
+                                            <span class="text-xs text-primary">@(p.Donation?.Cause?.Name ?? "General Cause")</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@p.PaymentMethod</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-dark">PKR @p.Amount.ToString("N0")</span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="AdminPayments" asp-action="Details" asp-route-id="@p.PaymentId" class="btn btn-sm btn-primary">
+                                                Review
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-circle-check text-success fa-3x mb-3"></i>
+                        <p class="mb-0 fw-semibold">No pending manual payments in the approval queue.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Donations -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark">
+                    <i class="fa-solid fa-hand-holding-dollar text-success me-2"></i>Recent Donations Record
+                </h5>
+                <a asp-controller="AdminDonations" asp-action="Index" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentDonations != null && Model.RecentDonations.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Donation #</th>
+                                    <th>Donor</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in Model.RecentDonations)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="AdminDonations" asp-action="Details" asp-route-id="@d.DonationId" class="fw-bold text-decoration-none">
+                                                @d.DonationNumber
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold text-dark d-block">@d.DonorName</span>
+                                            <span class="text-xs text-muted">@(d.Cause?.Name ?? "General Welfare")</span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-success">PKR @d.Amount.ToString("N0")</span>
+                                        </td>
+                                        <td>
+                                            @if (d.Status == DonationStatus.Approved)
+                                            {
+                                                <span class="badge bg-success">Approved</span>
+                                            }
+                                            else if (d.Status == DonationStatus.Pending)
+                                            {
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Rejected</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="text-xs text-muted">@d.CreatedAt.ToString("dd MMM yyyy")</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-solid fa-inbox fa-3x mb-3 text-secondary"></i>
+                        <p class="mb-0">No donations recorded yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Support Queries & Recent Users Row -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-headset text-info me-2"></i>Recent User Queries</h5>
+                <a asp-controller="AdminQueries" asp-action="Index" class="btn btn-sm btn-outline-info">View Queries</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentQueries != null && Model.RecentQueries.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var q in Model.RecentQueries)
+                        {
+                            <a asp-controller="AdminQueries" asp-action="Details" asp-route-id="@q.QueryId" class="list-group-item list-group-item-action p-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold text-dark">@q.Subject</h6>
+                                    <small class="text-muted">@q.CreatedAt.ToString("MMM dd")</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-xs text-muted">By: @q.FullName (@q.Email)</span>
+                                    @if (q.Status == QueryStatus.Open)
+                                    {
+                                        <span class="badge bg-danger">Open</span>
+                                    }
+                                    else if (q.Status == QueryStatus.InProgress)
+                                    {
+                                        <span class="badge bg-warning text-dark">In Progress</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Resolved</span>
+                                    }
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No open queries at the moment.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-users text-secondary me-2"></i>Recently Registered Members</h5>
+                <a asp-controller="AdminUsers" asp-action="Index" class="btn btn-sm btn-outline-secondary">Manage Users</a>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentUsers != null && Model.RecentUsers.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var u in Model.RecentUsers)
+                        {
+                            <div class="list-group-item p-3 d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                        @u.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold text-dark d-block">@u.FullName</span>
+                                        <span class="text-xs text-muted">@u.Email &bull; @(u.City ?? "Pakistan")</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-muted">@u.RegistrationDate.ToString("dd MMM yyyy")</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No registered users found.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Monthly Donations Line Chart
+        const monthlyCtx = document.getElementById('monthlyDonationsChart').getContext('2d');
+        const monthlyLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyLabels));
+        const monthlyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyDonationAmounts));
+
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: {
+                labels: monthlyLabels,
+                datasets: [{
+                    label: 'Donations (PKR)',
+                    data: monthlyData,
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#0d6efd',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'PKR ' + Number(context.raw).toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'PKR ' + value.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Cause Distribution Doughnut Chart
+        const causeCtx = document.getElementById('causeDistributionChart').getContext('2d');
+        const causeLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CauseLabels.Any() ? Model.CauseLabels : new List<string> { "General Aid" }));
+        const causeData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CauseDonationAmounts.Any() ? Model.CauseDonationAmounts : new List<decimal> { 1 }));
+
+        new Chart(causeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: causeLabels,
+                datasets: [{
+                    data: causeData,
+                    backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#d63384', '#6f42c1']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { boxWidth: 12, font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    </script>
+}

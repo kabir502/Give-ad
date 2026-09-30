@@ -1,0 +1,204 @@
+@model Payment
+@{
+    ViewData["Title"] = $"Payment #{Model.PaymentReference} Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Payments Queue
+    </a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">Payment Verification: #@Model.PaymentReference</h3>
+            <span class="text-muted">Submitted on @Model.SubmittedDate.ToString("dddd, dd MMMM yyyy, hh:mm tt")</span>
+        </div>
+        <div>
+            @if (Model.Status == PaymentStatus.Pending)
+            {
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2"><i class="fa-solid fa-clock me-1"></i> Awaiting Verification</span>
+            }
+            else if (Model.Status == PaymentStatus.Verified)
+            {
+                <span class="badge bg-success fs-6 px-3 py-2"><i class="fa-solid fa-circle-check me-1"></i> Payment Verified & Approved</span>
+            }
+            else
+            {
+                <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-circle-xmark me-1"></i> Payment Rejected</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Payment & Proof Slip Info -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i>Transaction Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Transaction / Reference ID</span>
+                        <span class="fs-6 fw-bold text-dark font-monospace">@Model.TransactionId</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Payment Method</span>
+                        <span class="badge bg-secondary fs-6">@Model.PaymentMethod</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Amount Received</span>
+                        <span class="fs-4 fw-bolder text-success">PKR @Model.Amount.ToString("N0")</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Sender Info / Masked Card</span>
+                        <span class="fs-6 fw-semibold text-dark">
+                            @(Model.SenderMobile ?? Model.SenderName ?? Model.MaskedCardNumber ?? "N/A")
+                        </span>
+                    </div>
+                    @if (Model.VerificationDate.HasValue)
+                    {
+                        <div class="col-sm-6">
+                            <span class="text-xs text-uppercase text-muted fw-bold d-block">Verification Date</span>
+                            <span class="text-dark">@Model.VerificationDate.Value.ToString("dd MMM yyyy, hh:mm tt")</span>
+                        </div>
+                        <div class="col-sm-6">
+                            <span class="text-xs text-uppercase text-muted fw-bold d-block">Verified By</span>
+                            <span class="text-dark fw-semibold">@(Model.VerifiedBy?.FullName ?? "Admin")</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.AdminRemarks))
+                    {
+                        <div class="col-12">
+                            <span class="text-xs text-uppercase text-muted fw-bold d-block">Admin Remarks</span>
+                            <div class="p-3 bg-light rounded border text-dark mt-1">
+                                @Model.AdminRemarks
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Proof of Payment Upload Preview -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-receipt text-warning me-2"></i>Proof Slip / Screenshot</h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                @if (!string.IsNullOrEmpty(Model.ReceiptFilePath))
+                {
+                    <div class="border rounded p-2 bg-light d-inline-block shadow-sm mb-3" style="max-width: 100%;">
+                        <img src="@Model.ReceiptFilePath" alt="Payment Proof Slip" class="img-fluid rounded" style="max-height: 400px; object-fit: contain;" />
+                    </div>
+                    <div>
+                        <a href="@Model.ReceiptFilePath" target="_blank" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Open Full Image in New Tab
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="py-5 text-muted">
+                        <i class="fa-solid fa-image fa-3x mb-2 text-secondary"></i>
+                        <p class="mb-0">No physical proof slip image uploaded. Payment processed via direct gateway or card.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Donation Target & Action Controls -->
+    <div class="col-lg-5">
+        <!-- Associated Donation Info -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-hand-holding-heart text-danger me-2"></i>Beneficiary Details</h5>
+            </div>
+            <div class="card-body p-4">
+                @if (Model.Donation != null)
+                {
+                    <div class="mb-3">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Donation Number</span>
+                        <a asp-controller="AdminDonations" asp-action="Details" asp-route-id="@Model.Donation.DonationId" class="fw-bold text-primary">
+                            @Model.Donation.DonationNumber
+                        </a>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Donor Name & Contact</span>
+                        <span class="fw-bold text-dark d-block">@Model.Donation.DonorName</span>
+                        <span class="text-muted d-block text-xs">@Model.Donation.DonorEmail</span>
+                        <span class="text-muted d-block text-xs">@Model.Donation.DonorPhone</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Target NGO</span>
+                        <span class="fw-semibold text-dark">@(Model.Donation.NGO?.Name ?? "GIVE-AID Welfare")</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-xs text-uppercase text-muted fw-bold d-block">Cause / Campaign</span>
+                        <span class="fw-semibold text-primary">@(Model.Donation.Cause?.Name ?? "General Welfare Fund")</span>
+                        @if (Model.Donation.Campaign != null)
+                        {
+                            <span class="text-muted text-xs d-block">Campaign: @Model.Donation.Campaign.Title</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Donation.DonorNotes))
+                    {
+                        <div class="mb-3">
+                            <span class="text-xs text-uppercase text-muted fw-bold d-block">Donor's Note</span>
+                            <p class="text-muted small fst-italic mb-0">"@Model.Donation.DonorNotes"</p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No direct donation record associated.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Admin Verification Actions -->
+        @if (Model.Status == PaymentStatus.Pending)
+        {
+            <div class="card border-0 shadow-sm rounded-3 bg-white">
+                <div class="card-header bg-transparent border-bottom py-3 px-4">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-gavel text-primary me-2"></i>Review Decision</h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted small mb-4">
+                        Please verify the transaction in your bank/merchant account before approving. Approving will automatically update the NGO and Cause raised tally and email the donor their official receipt.
+                    </p>
+
+                    <!-- Approve Form -->
+                    <form asp-action="Approve" method="post" class="mb-3">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="paymentId" value="@Model.PaymentId" />
+                        <div class="mb-3">
+                            <label class="form-label text-xs fw-bold text-muted">Approval Remarks (Optional)</label>
+                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Bank credit verified against reference..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 py-2 fw-bold" onclick="return confirm('Are you sure you want to APPROVE this payment and credit the cause funds?');">
+                            <i class="fa-solid fa-circle-check me-2"></i> Verify & Approve Payment
+                        </button>
+                    </form>
+
+                    <hr class="my-3 text-muted">
+
+                    <!-- Reject Form -->
+                    <form asp-action="Reject" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="paymentId" value="@Model.PaymentId" />
+                        <div class="mb-3">
+                            <label class="form-label text-xs fw-bold text-muted">Rejection Reason (Required for notification)</label>
+                            <textarea name="remarks" class="form-control" rows="2" placeholder="e.g. Slip unreadable, transaction ID not found on bank statement..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2 fw-bold" onclick="return confirm('Are you sure you want to REJECT this payment? The donor will be notified.');">
+                            <i class="fa-solid fa-circle-xmark me-2"></i> Reject Payment Slip
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+</div>

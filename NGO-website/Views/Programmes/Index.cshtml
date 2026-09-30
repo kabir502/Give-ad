@@ -1,0 +1,89 @@
+@model IEnumerable<NGO_website.Models.Entities.Programme>
+@{
+    ViewData["Title"] = "Outreach Programmes";
+    var currentFilter = ViewData["Filter"] as string ?? "upcoming";
+    var search = ViewData["Search"] as string;
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+            <i class="fa-solid fa-hands-holding-circle me-1"></i> Community Engagement & Volunteering
+        </span>
+        <h1 class="fw-extrabold text-dark">Welfare Programmes</h1>
+        <p class="text-secondary lead fs-6">Participate, volunteer, and make a hands-on difference in ongoing welfare activities.</p>
+    </div>
+
+    <!-- Filter & Search Strip -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white">
+        <form asp-controller="Programmes" asp-action="Index" method="get" class="row g-3 align-items-center">
+            <input type="hidden" name="filter" value="@currentFilter" />
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass text-secondary"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search programme by title, location, or topic..." value="@search" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="btn-group w-100" role="group">
+                    <a asp-controller="Programmes" asp-action="Index" asp-route-filter="upcoming" asp-route-search="@search" class="btn @(currentFilter == "upcoming" ? "btn-primary" : "btn-outline-primary")">Upcoming</a>
+                    <a asp-controller="Programmes" asp-action="Index" asp-route-filter="past" asp-route-search="@search" class="btn @(currentFilter == "past" ? "btn-primary" : "btn-outline-primary")">Past</a>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-dark w-100 fw-semibold">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Programmes List -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+            <i class="fa-solid fa-calendar-xmark text-secondary display-4 mb-3"></i>
+            <h4 class="fw-bold text-dark">No programmes found</h4>
+            <p class="text-secondary">There are no @currentFilter programmes matching your search criteria.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var prog in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden d-flex flex-column">
+                        <img src="@(string.IsNullOrEmpty(prog.ImageUrl) ? "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=80" : prog.ImageUrl)" class="w-100" style="height: 220px; object-fit: cover;" alt="@prog.Title" />
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary-subtle text-primary">@prog.Date.ToString("ddd, dd MMM yyyy")</span>
+                                <span class="badge bg-light text-secondary border">@(prog.NGO?.Name ?? "GIVE-AID")</span>
+                            </div>
+
+                            <h5 class="fw-bold text-dark mb-2">
+                                <a asp-controller="Programmes" asp-action="Details" asp-route-id="@prog.ProgrammeId" class="text-dark text-decoration-none hover-primary">
+                                    @prog.Title
+                                </a>
+                            </h5>
+                            <p class="text-secondary text-sm flex-grow-1">
+                                @(prog.Description.Length > 120 ? prog.Description.Substring(0, 117) + "..." : prog.Description)
+                            </p>
+
+                            <div class="border-top pt-3 mb-3 text-xs text-secondary d-flex flex-column gap-1">
+                                <div><i class="fa-solid fa-clock text-primary me-2"></i> @prog.StartTime - @prog.EndTime</div>
+                                <div><i class="fa-solid fa-location-dot text-danger me-2"></i> @prog.Location</div>
+                                @if (prog.Capacity.HasValue)
+                                {
+                                    <div><i class="fa-solid fa-users text-info me-2"></i> Capacity: @prog.Capacity attendees</div>
+                                }
+                            </div>
+
+                            <a asp-controller="Programmes" asp-action="Details" asp-route-id="@prog.ProgrammeId" class="btn btn-outline-primary w-100 rounded-pill fw-semibold">
+                                View Details & Show Interest
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

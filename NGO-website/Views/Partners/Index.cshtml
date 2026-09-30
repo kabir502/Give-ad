@@ -1,0 +1,37 @@
+@model IEnumerable<NGO_website.Models.Entities.Partner>
+@{
+    ViewData["Title"] = "Our Strategic Partners";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+            <i class="fa-solid fa-handshake me-1"></i> Synergies & Collaborative Impact
+        </span>
+        <h1 class="fw-extrabold text-dark">Our Partners & Alliances</h1>
+        <p class="text-secondary lead fs-6">We collaborate with banking leaders, technology companies, and CSR foundations to drive scalable social transformation.</p>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var partner in Model)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center d-flex flex-column align-items-center">
+                    <div class="p-3 bg-light rounded-4 mb-3 d-flex align-items-center justify-content-center" style="width: 140px; height: 100px;">
+                        <img src="@partner.LogoUrl" alt="@partner.Name" class="img-fluid rounded" style="max-height: 70px; max-width: 120px;" />
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary mb-2">@partner.Category</span>
+                    <h5 class="fw-bold text-dark mb-2">@partner.Name</h5>
+                    <p class="text-secondary text-sm flex-grow-1">@partner.Description</p>
+
+                    @if (!string.IsNullOrEmpty(partner.WebsiteUrl))
+                    {
+                        <a href="@partner.WebsiteUrl" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Visit Website
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

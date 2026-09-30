@@ -1,0 +1,98 @@
+@model List<Programme>
+@{
+    ViewData["Title"] = "Programmes Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Welfare & Volunteer Programmes</h3>
+        <p class="text-muted mb-0">Organize medical camps, food drives, ration distribution, and volunteer initiatives.</p>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Add Programme
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Programme Details</th>
+                            <th>Partner NGO</th>
+                            <th>Date & Time</th>
+                            <th>Location</th>
+                            <th>Volunteers / Leads</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@p.ImageUrl" alt="@p.Title" class="rounded" style="width: 48px; height: 48px; object-fit: cover;" />
+                                        <div>
+                                            <a asp-action="Details" asp-route-id="@p.ProgrammeId" class="fw-bold text-dark text-decoration-none">@p.Title</a>
+                                            <span class="text-xs text-muted d-block">Capacity: @(p.Capacity?.ToString() ?? "Open") attendees</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold text-primary">@(p.NGO?.Name ?? "GIVE-AID")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-medium text-dark d-block">@p.Date.ToString("dd MMM yyyy")</span>
+                                    <span class="text-xs text-muted">@(p.StartTime ?? "TBA") - @(p.EndTime ?? "TBA")</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark text-sm"><i class="fa-solid fa-location-dot text-danger me-1"></i>@p.Location</span>
+                                </td>
+                                <td>
+                                    <a asp-action="Interests" asp-route-id="@p.ProgrammeId" class="badge bg-info text-dark text-decoration-none px-2 py-1">
+                                        <i class="fa-solid fa-user-check me-1"></i> @(p.ProgrammeInterests?.Count ?? 0) Registrations
+                                    </a>
+                                </td>
+                                <td>
+                                    <form asp-action="ToggleStatus" asp-route-id="@p.ProgrammeId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="badge border-0 @(p.IsActive ? "bg-success" : "bg-secondary")" style="cursor: pointer;">
+                                            @(p.IsActive ? p.Status.ToString() : "Inactive")
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@p.ProgrammeId" class="btn btn-outline-primary" title="Details">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@p.ProgrammeId" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-calendar-days fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No programmes scheduled</h5>
+                <p class="mb-3">Schedule your first outreach or volunteer programme.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">Create Programme</a>
+            </div>
+        }
+    </div>
+</div>

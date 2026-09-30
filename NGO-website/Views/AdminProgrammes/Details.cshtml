@@ -1,0 +1,114 @@
+@model Programme
+@{
+    ViewData["Title"] = $"{Model.Title} - Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Programmes
+    </a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">@Model.Title</h3>
+            <span class="badge bg-info text-dark me-2">@Model.Status</span>
+            <span class="text-muted text-xs">@(Model.IsActive ? "Active" : "Inactive") &bull; Created @Model.CreatedDate.ToString("dd MMM yyyy")</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.ProgrammeId" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit Programme
+            </a>
+            <a asp-action="Interests" asp-route-id="@Model.ProgrammeId" class="btn btn-outline-info shadow-sm">
+                <i class="fa-solid fa-users me-1"></i> Registrations (@(Model.ProgrammeInterests?.Count ?? 0))
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4 overflow-hidden">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Title" class="w-100" style="max-height: 350px; object-fit: cover;" />
+            }
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-3">Programme Description</h5>
+                <p class="text-dark leading-relaxed">@Model.Description</p>
+            </div>
+        </div>
+
+        <!-- Registered Volunteers & Interested Attendees -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-user-check text-success me-2"></i>Volunteer Registrations</h5>
+                <span class="badge bg-light text-dark border">@(Model.ProgrammeInterests?.Count ?? 0) Registrations</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.ProgrammeInterests != null && Model.ProgrammeInterests.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registered Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var interest in Model.ProgrammeInterests.OrderByDescending(x => x.RegisteredAt).Take(8))
+                                {
+                                    <tr>
+                                        <td><span class="fw-semibold text-dark">@interest.FullName</span></td>
+                                        <td><span class="text-xs text-muted">@interest.Email</span></td>
+                                        <td><span class="text-dark">@interest.Phone</span></td>
+                                        <td><span class="text-xs text-muted">@interest.RegisteredAt.ToString("dd MMM yyyy")</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No volunteer or attendee signups recorded for this programme yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Logistics -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-calendar-check text-primary me-2"></i>Event Logistics</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Date:</span>
+                    <span class="fw-bold text-dark">@Model.Date.ToString("dddd, dd MMM yyyy")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Timings:</span>
+                    <span class="fw-semibold text-dark">@(Model.StartTime ?? "TBA") - @(Model.EndTime ?? "TBA")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Location:</span>
+                    <span class="fw-semibold text-dark text-end">@Model.Location</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Partner NGO:</span>
+                    <span class="fw-semibold text-primary">@(Model.NGO?.Name ?? "GIVE-AID")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                    <span class="text-muted">Max Capacity:</span>
+                    <span class="fw-bold text-dark">@(Model.Capacity?.ToString() ?? "Unlimited")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

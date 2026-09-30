@@ -1,0 +1,102 @@
+@model NGO_website.Models.Entities.NGO
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="NGOs" asp-action="Index">NGOs</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <!-- NGO Profile Header Card -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 mb-5 bg-white">
+        <div class="row align-items-center g-4">
+            <div class="col-md-auto text-center">
+                <img src="@(string.IsNullOrEmpty(Model.LogoUrl) ? "https://images.unsplash.com/photo-1532629345422-7515f3d16bb9?w=300&auto=format&fit=crop&q=80" : Model.LogoUrl)" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover;" alt="@Model.Name" />
+            </div>
+            <div class="col-md">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <h2 class="fw-extrabold text-dark m-0">@Model.Name</h2>
+                    <span class="badge bg-success px-3 py-1 rounded-pill">Verified Active NGO</span>
+                </div>
+                <p class="text-secondary lead fs-6 mb-3">@Model.Description</p>
+                <div class="d-flex flex-wrap gap-4 text-sm text-secondary">
+                    <span><i class="fa-solid fa-location-dot text-danger me-1"></i> @Model.Address</span>
+                    <span><i class="fa-solid fa-phone text-primary me-1"></i> @Model.Phone</span>
+                    <span><i class="fa-solid fa-envelope text-info me-1"></i> @Model.Email</span>
+                    @if (!string.IsNullOrEmpty(Model.Website))
+                    {
+                        <span><i class="fa-solid fa-globe text-success me-1"></i> <a href="@Model.Website" target="_blank" class="text-secondary text-decoration-none hover-underline">Official Website</a></span>
+                    }
+                </div>
+            </div>
+            <div class="col-md-auto text-center">
+                <a asp-controller="Donate" asp-action="Index" asp-route-ngoId="@Model.NGOId" class="btn btn-warning btn-lg px-4 py-3 fw-bold text-dark rounded-pill shadow-sm">
+                    <i class="fa-solid fa-heart me-2 text-danger"></i> Donate to this NGO
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Causes managed by this NGO -->
+    <h3 class="fw-bold text-dark mb-4"><i class="fa-solid fa-bullseye text-primary me-2"></i> Causes Supported by @Model.Name</h3>
+    <div class="row g-4 mb-5">
+        @if (!Model.Causes.Any())
+        {
+            <div class="col-12"><p class="text-secondary">No active causes currently registered.</p></div>
+        }
+        else
+        {
+            @foreach (var cause in Model.Causes)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="welfare-card">
+                        <img src="@(string.IsNullOrEmpty(cause.ImageUrl) ? "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&auto=format&fit=crop&q=80" : cause.ImageUrl)" class="welfare-card-img" alt="@cause.Name" />
+                        <div class="welfare-card-body">
+                            <span class="badge bg-primary align-self-start mb-2">@cause.Category</span>
+                            <h6 class="fw-bold text-dark mb-2">@cause.Name</h6>
+                            <p class="text-secondary text-xs flex-grow-1">@(cause.Description.Length > 100 ? cause.Description.Substring(0, 97) + "..." : cause.Description)</p>
+                            <div class="d-flex justify-content-between text-xs fw-semibold mb-1">
+                                <span class="text-success">PKR @cause.RaisedAmount.ToString("N0")</span>
+                                <span class="text-secondary">Goal: PKR @cause.TargetAmount.ToString("N0")</span>
+                            </div>
+                            <div class="progress custom-progress mb-3">
+                                <div class="progress-bar" style="width: @cause.ProgressPercentage%"></div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Causes" asp-action="Details" asp-route-id="@cause.CauseId" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill">Details</a>
+                                <a asp-controller="Donate" asp-action="Index" asp-route-causeId="@cause.CauseId" class="btn btn-warning btn-sm flex-fill fw-bold rounded-pill text-dark">Donate</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Active Programmes -->
+    @if (Model.Programmes.Any())
+    {
+        <h3 class="fw-bold text-dark mb-4"><i class="fa-solid fa-calendar-days text-info me-2"></i> Outreach Programmes</h3>
+        <div class="row g-4 mb-5">
+            @foreach (var prog in Model.Programmes)
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 d-flex flex-row gap-3 align-items-center">
+                        <img src="@(string.IsNullOrEmpty(prog.ImageUrl) ? "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&auto=format&fit=crop&q=80" : prog.ImageUrl)" style="width: 100px; height: 90px; object-fit: cover;" class="rounded-3" alt="@prog.Title" />
+                        <div class="flex-grow-1">
+                            <span class="badge bg-info-subtle text-info mb-1">@prog.Date.ToString("ddd, dd MMM yyyy")</span>
+                            <h6 class="fw-bold text-dark m-0">@prog.Title</h6>
+                            <p class="text-secondary text-xs m-0 mt-1"><i class="fa-solid fa-location-dot text-danger me-1"></i> @prog.Location</p>
+                        </div>
+                        <a asp-controller="Programmes" asp-action="Details" asp-route-id="@prog.ProgrammeId" class="btn btn-primary btn-sm rounded-pill px-3">Join</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

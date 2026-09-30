@@ -1,0 +1,70 @@
+@model FAQ
+@{
+    ViewData["Title"] = "Edit FAQ";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to FAQs
+    </a>
+    <h3 class="fw-bold mb-1 text-dark">Edit FAQ</h3>
+    <p class="text-muted mb-0">Update FAQ question, category, answer, and display sorting order.</p>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-4">
+        <form asp-action="Edit" asp-route-id="@Model.FAQId" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="FAQId" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Category" class="form-label fw-semibold"></label>
+                    <input asp-for="Category" class="form-control" />
+                    <span asp-validation-for="Category" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="DisplayOrder" class="form-label fw-semibold"></label>
+                    <input asp-for="DisplayOrder" class="form-control" />
+                    <span asp-validation-for="DisplayOrder" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-center pt-4">
+                    <div class="form-check form-switch fs-5">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive">
+                        <label class="form-check-label fs-6 fw-semibold ms-2" asp-for="IsActive">
+                            Active
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Question" class="form-label fw-semibold"></label>
+                    <input asp-for="Question" class="form-control" />
+                    <span asp-validation-for="Question" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="Answer" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Answer" class="form-control" rows="6"></textarea>
+                    <span asp-validation-for="Answer" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 pt-3 border-top mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fa-solid fa-save me-1"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

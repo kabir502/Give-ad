@@ -1,0 +1,415 @@
+@model NGO_website.ViewModels.Donations.DonationFormViewModel
+@{
+    ViewData["Title"] = "Make a Donation — GIVE-AID";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header banner -->
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold text-sm mb-2">
+                    <i class="fa-solid fa-shield-heart me-1"></i> Secure & Audited Donation Portal
+                </span>
+                <h1 class="fw-extrabold text-dark">Make a Life-Changing Contribution</h1>
+                <p class="text-secondary lead fs-6">Select your preferred NGO, choose a cause, and contribute via Credit/Debit Card, EasyPaisa, or JazzCash.</p>
+            </div>
+
+            <form asp-controller="Donate" asp-action="Index" method="post" enctype="multipart/form-data" id="donationForm" class="prevent-duplicate-submit">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
+
+                <!-- Hidden inputs for EasyPaisa / JazzCash populated from modal -->
+                <input type="hidden" asp-for="TransactionId" id="hiddenEpTxId" />
+                <input type="hidden" asp-for="SenderName" id="hiddenEpSenderName" />
+                <input type="hidden" asp-for="SenderMobile" id="hiddenEpSenderMobile" />
+                <input type="hidden" asp-for="PaymentDate" id="hiddenEpPaymentDate" />
+                <!-- Hidden file input for mobile receipt -->
+                <input type="file" asp-for="ReceiptFile" id="mainReceiptFile" class="d-none" />
+
+                <!-- Step 1: NGO, Cause & Campaign Selection -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center">
+                            <span class="donation-step-badge">1</span> Select Welfare Organization & Cause
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="NGOId" class="form-label fw-semibold text-secondary"></label>
+                                <select asp-for="NGOId" asp-items="Model.NgoList" id="ngoSelect" class="form-select form-select-lg">
+                                    <option value="">-- Choose NGO --</option>
+                                </select>
+                                <span asp-validation-for="NGOId" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="CauseId" class="form-label fw-semibold text-secondary"></label>
+                                <select asp-for="CauseId" asp-items="Model.CauseList" id="causeSelect" class="form-select form-select-lg">
+                                    <option value="">-- Select Welfare Cause --</option>
+                                </select>
+                                <span asp-validation-for="CauseId" class="text-danger text-sm"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="CampaignId" class="form-label fw-semibold text-secondary"></label>
+                                <select asp-for="CampaignId" asp-items="Model.CampaignList" id="campaignSelect" class="form-select">
+                                    <option value="">-- None / General Cause Donation --</option>
+                                </select>
+                                <span class="text-secondary text-xs">Optional: Select an active campaign if you wish to contribute towards a specific fundraiser.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Donation Amount Selection -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center">
+                            <span class="donation-step-badge">2</span> Choose Donation Amount (PKR)
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <label class="form-label fw-semibold text-secondary mb-3">Select a Preset Amount or Enter a Custom Amount</label>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 500 ? "active" : "")" data-amount="500">Rs. 500</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 1000 ? "active" : "")" data-amount="1000">Rs. 1,000</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 2500 ? "active" : "")" data-amount="2500">Rs. 2,500</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 5000 ? "active" : "")" data-amount="5000">Rs. 5,000</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 10000 ? "active" : "")" data-amount="10000">Rs. 10,000</div>
+                            </div>
+                            <div class="col-6 col-md-2">
+                                <div class="amount-btn-pill @(Model.Amount == 25000 ? "active" : "")" data-amount="25000">Rs. 25,000</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label asp-for="Amount" class="form-label fw-semibold text-secondary">Custom Amount (PKR)</label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-light fw-bold">PKR</span>
+                                    <input asp-for="Amount" id="donationAmountInput" type="number" min="10" max="10000000" class="form-control fw-bold text-primary" placeholder="Enter custom amount" />
+                                </div>
+                                <span asp-validation-for="Amount" class="text-danger text-sm"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Method Selection -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center">
+                            <span class="donation-step-badge">3</span> Select Payment Method
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3 mb-4">
+                            <!-- Card Option -->
+                            <div class="col-md-4">
+                                <label class="payment-method-card w-100 d-flex align-items-center gap-3 @(Model.PaymentMethod == PaymentMethodType.CreditDebitCard ? "selected" : "")">
+                                    <input type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethodType.CreditDebitCard)" class="form-check-input mt-0" />
+                                    <div>
+                                        <div class="fw-bold text-dark"><i class="fa-regular fa-credit-card text-primary me-1"></i> Card Payment</div>
+                                        <small class="text-secondary text-xs">Visa / Mastercard</small>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- EasyPaisa Option -->
+                            <div class="col-md-4">
+                                <label class="payment-method-card w-100 d-flex align-items-center gap-3 @(Model.PaymentMethod == PaymentMethodType.EasyPaisa ? "selected" : "")">
+                                    <input type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethodType.EasyPaisa)" class="form-check-input mt-0" />
+                                    <div>
+                                        <div class="fw-bold text-dark"><i class="fa-solid fa-mobile-screen text-success me-1"></i> EasyPaisa</div>
+                                        <small class="text-secondary text-xs">Direct Mobile Wallet</small>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- JazzCash Option -->
+                            <div class="col-md-4">
+                                <label class="payment-method-card w-100 d-flex align-items-center gap-3 @(Model.PaymentMethod == PaymentMethodType.JazzCash ? "selected" : "")">
+                                    <input type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethodType.JazzCash)" class="form-check-input mt-0" />
+                                    <div>
+                                        <div class="fw-bold text-dark"><i class="fa-solid fa-wallet text-danger me-1"></i> JazzCash</div>
+                                        <small class="text-secondary text-xs">Direct Mobile Wallet</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Card Payment Subform -->
+                        <div id="cardPaymentSection" style="display: @(Model.PaymentMethod == PaymentMethodType.CreditDebitCard ? "block" : "none");">
+                            <div class="p-4 bg-light rounded-4 border">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="fw-bold text-dark m-0"><i class="fa-solid fa-lock text-success me-2"></i> Credit or Debit Card Details (Demo Processor)</h6>
+                                    <div class="d-flex gap-2">
+                                        <i class="fa-brands fa-cc-visa fs-3 text-primary"></i>
+                                        <i class="fa-brands fa-cc-mastercard fs-3 text-danger"></i>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label asp-for="CardHolderName" class="form-label fw-semibold text-secondary"></label>
+                                        <input asp-for="CardHolderName" class="form-control" placeholder="Name as on card" />
+                                        <span asp-validation-for="CardHolderName" class="text-danger text-sm"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label asp-for="CardNumber" class="form-label fw-semibold text-secondary"></label>
+                                        <input asp-for="CardNumber" class="form-control" placeholder="4000 1234 5678 9010" maxlength="19" />
+                                        <span asp-validation-for="CardNumber" class="text-danger text-sm"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="ExpiryMonth" class="form-label fw-semibold text-secondary"></label>
+                                        <select asp-for="ExpiryMonth" class="form-select">
+                                            <option value="">Month</option>
+                                            @for (int m = 1; m <= 12; m++)
+                                            {
+                                                <option value="@m.ToString("D2")">@m.ToString("D2")</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="ExpiryMonth" class="text-danger text-sm"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="ExpiryYear" class="form-label fw-semibold text-secondary"></label>
+                                        <select asp-for="ExpiryYear" class="form-select">
+                                            <option value="">Year</option>
+                                            @for (int y = DateTime.UtcNow.Year; y <= DateTime.UtcNow.Year + 10; y++)
+                                            {
+                                                <option value="@y">@y</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="ExpiryYear" class="text-danger text-sm"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Cvv" class="form-label fw-semibold text-secondary"></label>
+                                        <input asp-for="Cvv" type="password" maxlength="4" class="form-control" placeholder="123" />
+                                        <span asp-validation-for="Cvv" class="text-danger text-sm"></span>
+                                        <small class="text-muted text-xs">Never stored in database</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EasyPaisa Submitted Preview Section -->
+                        <div id="easyPaisaSection" style="display: @(Model.PaymentMethod == PaymentMethodType.EasyPaisa ? "block" : "none");">
+                            <div class="p-4 bg-success bg-opacity-10 border border-success rounded-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-success m-0"><i class="fa-solid fa-mobile-screen me-2"></i> EasyPaisa Payment Information</h6>
+                                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#easyPaisaModal">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit EasyPaisa Details
+                                    </button>
+                                </div>
+                                <p class="text-secondary text-sm m-0 mb-3">Please transfer your donation amount to the official EasyPaisa account and provide transaction proof.</p>
+                                <div id="epConfirmationPreview" class="@(string.IsNullOrEmpty(Model.TransactionId) ? "d-none" : "")">
+                                    <div class="bg-white p-3 rounded-3 border">
+                                        <div><strong>Transaction ID:</strong> <span id="epSummaryTxDisplay" class="text-primary fw-bold">@Model.TransactionId</span></div>
+                                        <div><strong>Sender Mobile:</strong> <span id="epSummaryMobileDisplay">@Model.SenderMobile</span></div>
+                                        <div><strong>Receipt File:</strong> <span id="epReceiptFileNameDisplay" class="text-muted">Attached</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- JazzCash Submitted Preview Section -->
+                        <div id="jazzCashSection" style="display: @(Model.PaymentMethod == PaymentMethodType.JazzCash ? "block" : "none");">
+                            <div class="p-4 bg-danger bg-opacity-10 border border-danger rounded-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-danger m-0"><i class="fa-solid fa-wallet me-2"></i> JazzCash Payment Information</h6>
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#jazzCashModal">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit JazzCash Details
+                                    </button>
+                                </div>
+                                <p class="text-secondary text-sm m-0 mb-3">Transfer your donation to the official JazzCash merchant account and record your TID.</p>
+                                <div id="jcConfirmationPreview" class="@(string.IsNullOrEmpty(Model.TransactionId) ? "d-none" : "")">
+                                    <div class="bg-white p-3 rounded-3 border">
+                                        <div><strong>Transaction ID:</strong> <span id="jcSummaryTxDisplay" class="text-danger fw-bold">@Model.TransactionId</span></div>
+                                        <div><strong>Sender Mobile:</strong> <span id="jcSummaryMobileDisplay">@Model.SenderMobile</span></div>
+                                        <div><strong>Receipt File:</strong> <span id="jcReceiptFileNameDisplay" class="text-muted">Attached</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Step 4: Donor Identification & Notes -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white border-bottom p-4">
+                        <h5 class="fw-bold m-0 d-flex align-items-center">
+                            <span class="donation-step-badge">4</span> Donor Information & Receipt Details
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="DonorName" class="form-label fw-semibold text-secondary"></label>
+                                <input asp-for="DonorName" class="form-control form-control-lg" placeholder="Full name for receipt" />
+                                <span asp-validation-for="DonorName" class="text-danger text-sm"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DonorEmail" class="form-label fw-semibold text-secondary"></label>
+                                <input asp-for="DonorEmail" class="form-control form-control-lg" placeholder="Where confirmation will be sent" />
+                                <span asp-validation-for="DonorEmail" class="text-danger text-sm"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DonorPhone" class="form-label fw-semibold text-secondary"></label>
+                                <input asp-for="DonorPhone" class="form-control" placeholder="+92 300 0000000" />
+                                <span asp-validation-for="DonorPhone" class="text-danger text-sm"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DonorNotes" class="form-label fw-semibold text-secondary"></label>
+                                <input asp-for="DonorNotes" class="form-control" placeholder="e.g., In memory of parents / Zakat donation" />
+                                <span asp-validation-for="DonorNotes" class="text-danger text-sm"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button Container -->
+                <div class="text-center mt-5 mb-4">
+                    <button type="submit" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-5">
+                        <i class="fa-solid fa-circle-check me-2 text-danger"></i> Complete & Submit Donation
+                    </button>
+                    <p class="text-secondary text-xs mt-2">
+                        <i class="fa-solid fa-lock text-success me-1"></i> 256-bit SSL encrypted &bull; Transparent reconciliation &bull; Official tax receipt generated
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ================= EASYPAISA MODAL ================= -->
+<div class="modal fade" id="easyPaisaModal" tabindex="-1" aria-labelledby="easyPaisaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-success text-white p-4">
+                <h5 class="modal-title fw-bold" id="easyPaisaModalLabel">
+                    <i class="fa-solid fa-mobile-screen me-2"></i> EasyPaisa Direct Payment Instructions
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Instruction & Account details -->
+                <div class="alert alert-success border-0 shadow-xs mb-4">
+                    <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-info me-1"></i> EasyPaisa Account Details:</h6>
+                    <div class="row g-2 text-sm">
+                        <div class="col-sm-6"><strong>Account Number / Mobile:</strong> <span class="badge bg-success fs-6">0345-5678901</span></div>
+                        <div class="col-sm-6"><strong>Account Title:</strong> GIVE-AID Welfare Foundation</div>
+                        <div class="col-12 mt-2"><strong>Amount to Transfer:</strong> <span id="modalDonationAmountSummary" class="fw-bold text-success fs-6">PKR @Model.Amount.ToString("N0")</span></div>
+                    </div>
+                </div>
+
+                <p class="text-secondary text-sm">
+                    <strong>Instructions:</strong> Open your EasyPaisa App or visit an EasyPaisa retailer. Transfer the selected donation amount to the above account. Once sent, copy your Transaction ID (TID) from the SMS/Receipt and fill the form below.
+                </p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">EasyPaisa Transaction ID (TID) <span class="text-danger">*</span></label>
+                        <input type="text" id="epModalTxId" class="form-control form-control-lg" placeholder="e.g. 2389104829" value="@Model.TransactionId" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Sender Mobile Number <span class="text-danger">*</span></label>
+                        <input type="tel" id="epModalSenderMobile" class="form-control form-control-lg" placeholder="03450000000" value="@Model.SenderMobile" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Sender Name (Optional)</label>
+                        <input type="text" id="epModalSenderName" class="form-control" placeholder="Sender Account Title" value="@Model.SenderName" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Payment Date</label>
+                        <input type="date" id="epModalPaymentDate" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Upload Payment Receipt / Screenshot <span class="text-danger">*</span></label>
+                        <input type="file" id="epModalReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.pdf" />
+                        <small class="text-muted text-xs">Supported formats: JPG, PNG, PDF (Max 5MB)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light p-3">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="epModalConfirmBtn" class="btn btn-success fw-bold rounded-pill px-4">
+                    <i class="fa-solid fa-check me-1"></i> Save & Confirm Payment Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= JAZZCASH MODAL ================= -->
+<div class="modal fade" id="jazzCashModal" tabindex="-1" aria-labelledby="jazzCashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header bg-danger text-white p-4">
+                <h5 class="modal-title fw-bold" id="jazzCashModalLabel">
+                    <i class="fa-solid fa-wallet me-2"></i> JazzCash Direct Payment Instructions
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-danger border-0 shadow-xs mb-4">
+                    <h6 class="fw-bold text-danger mb-2"><i class="fa-solid fa-circle-info me-1"></i> JazzCash Account Details:</h6>
+                    <div class="row g-2 text-sm">
+                        <div class="col-sm-6"><strong>Till / Mobile Number:</strong> <span class="badge bg-danger fs-6">0300-9876543</span></div>
+                        <div class="col-sm-6"><strong>Account Title:</strong> GIVE-AID Welfare Society</div>
+                        <div class="col-12 mt-2"><strong>Amount to Transfer:</strong> <span id="modalDonationAmountSummaryJC" class="fw-bold text-danger fs-6">PKR @Model.Amount.ToString("N0")</span></div>
+                    </div>
+                </div>
+
+                <p class="text-secondary text-sm">
+                    <strong>Instructions:</strong> Transfer the donation amount using your JazzCash app or dial *786#. Enter your transaction ID (TID) and attach the receipt screenshot below.
+                </p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">JazzCash Transaction ID (TID) <span class="text-danger">*</span></label>
+                        <input type="text" id="jcModalTxId" class="form-control form-control-lg" placeholder="e.g. 0987654321" value="@Model.TransactionId" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Sender Mobile Number <span class="text-danger">*</span></label>
+                        <input type="tel" id="jcModalSenderMobile" class="form-control form-control-lg" placeholder="03000000000" value="@Model.SenderMobile" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Sender Name (Optional)</label>
+                        <input type="text" id="jcModalSenderName" class="form-control" placeholder="Sender Account Title" value="@Model.SenderName" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold text-secondary">Payment Date</label>
+                        <input type="date" id="jcModalPaymentDate" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold text-secondary">Upload Payment Receipt / Screenshot <span class="text-danger">*</span></label>
+                        <input type="file" id="jcModalReceiptFile" class="form-control" accept=".jpg,.jpeg,.png,.pdf" />
+                        <small class="text-muted text-xs">Supported formats: JPG, PNG, PDF (Max 5MB)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light p-3">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="jcModalConfirmBtn" class="btn btn-danger fw-bold rounded-pill px-4">
+                    <i class="fa-solid fa-check me-1"></i> Save & Confirm Payment Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

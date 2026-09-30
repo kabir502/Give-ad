@@ -1,0 +1,181 @@
+/* GIVE-AID Admin Portal — aligned with landing design system */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --sidebar-width: 270px;
+    --sidebar-bg: #061525;
+    --sidebar-active-bg: #0b1f33;
+    --admin-primary: #0d8f82;
+    --admin-card-border: rgba(11, 31, 51, 0.1);
+    --ga-navy: #0b1f33;
+    --ga-teal: #0d8f82;
+    --ga-teal-dark: #0a6f65;
+    --ga-warm: #f6f4f0;
+    --ga-warm-soft: #ebe7e0;
+    --ga-ink: #142433;
+    --ga-muted: #5c6b7a;
+    --ga-radius: 6px;
+    --ga-radius-lg: 12px;
+    --ga-font: 'Manrope', system-ui, sans-serif;
+    --ga-display: 'Fraunces', Georgia, serif;
+}
+
+body.admin-body {
+    font-family: var(--ga-font);
+    background-color: var(--ga-warm);
+    color: var(--ga-ink);
+    margin: 0;
+    padding: 0;
+}
+
+.admin-wrapper {
+    min-height: 100vh;
+    display: flex;
+}
+
+#admin-sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background-color: var(--sidebar-bg) !important;
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.admin-nav-list .nav-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: var(--ga-radius);
+    color: #94a3b8 !important;
+    transition: all 0.2s ease;
+}
+
+.admin-nav-list .nav-link:hover,
+.admin-nav-list .nav-link.active {
+    background-color: var(--sidebar-active-bg);
+    color: #ffffff !important;
+}
+
+.admin-nav-list .nav-link.active {
+    border-left: 3px solid var(--ga-teal);
+}
+
+.admin-nav-list .nav-header {
+    letter-spacing: 0.08em;
+    color: #7dd3c8 !important;
+}
+
+.admin-main {
+    flex-grow: 1;
+    min-width: 0;
+    background-color: var(--ga-warm);
+}
+
+.admin-main h1,
+.admin-main h2,
+.admin-main h3,
+.admin-main h4 {
+    font-family: var(--ga-display);
+    color: var(--ga-navy);
+    letter-spacing: -0.02em;
+}
+
+.admin-card {
+    background: #ffffff;
+    border: 1px solid var(--admin-card-border);
+    border-radius: var(--ga-radius-lg);
+    box-shadow: 0 1px 2px rgba(11, 31, 51, 0.04);
+}
+
+.admin-table th {
+    background-color: var(--ga-warm-soft);
+    color: var(--ga-muted);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-top: none;
+}
+
+.admin-table td {
+    vertical-align: middle;
+    font-size: 0.92rem;
+    border-color: var(--admin-card-border);
+}
+
+.admin-main .btn {
+    font-weight: 700;
+    border-radius: var(--ga-radius) !important;
+}
+
+.admin-main .btn-primary {
+    background: var(--ga-teal) !important;
+    border-color: var(--ga-teal) !important;
+}
+
+.admin-main .btn-primary:hover {
+    background: var(--ga-teal-dark) !important;
+    border-color: var(--ga-teal-dark) !important;
+}
+
+.admin-main .btn-warning {
+    background: var(--ga-navy) !important;
+    border-color: var(--ga-navy) !important;
+    color: #fff !important;
+}
+
+.admin-main .form-control,
+.admin-main .form-select {
+    border-radius: var(--ga-radius);
+    border-color: var(--admin-card-border);
+}
+
+.admin-main .form-control:focus,
+.admin-main .form-select:focus {
+    border-color: var(--ga-teal);
+    box-shadow: 0 0 0 3px rgba(13, 143, 130, 0.12);
+}
+
+.admin-main .badge.bg-primary {
+    background: var(--ga-navy) !important;
+}
+
+.admin-main .badge.bg-success {
+    background: var(--ga-teal) !important;
+}
+
+.admin-main .text-primary {
+    color: var(--ga-teal) !important;
+}
+
+.brand-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    font-size: 1.15rem;
+}
+
+#admin-sidebar .brand-icon-wrapper.bg-primary {
+    background: var(--ga-teal) !important;
+}
+
+#admin-sidebar .text-warning {
+    color: #7dd3c8 !important;
+}
+
+.text-xs { font-size: 0.78rem; }
+
+@media (max-width: 767.98px) {
+    #admin-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+    }
+    #admin-sidebar.show {
+        transform: translateX(0);
+    }
+}

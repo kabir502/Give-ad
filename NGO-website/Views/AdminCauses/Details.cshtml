@@ -1,0 +1,143 @@
+@model Cause
+@{
+    ViewData["Title"] = $"{Model.Name} - Cause Details";
+    Layout = "_AdminLayout";
+    var progress = Model.TargetAmount > 0 ? Math.Min(100, (int)((Model.RaisedAmount / Model.TargetAmount) * 100)) : 0;
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Back to Causes List
+    </a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h3 class="fw-bold mb-1 text-dark">@Model.Name</h3>
+            <span class="badge bg-primary me-2">@Model.Category</span>
+            <span class="text-muted text-xs">Created on @Model.CreatedDate.ToString("dd MMMM yyyy") &bull; @(Model.IsActive ? "Active" : "Inactive")</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.CauseId" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-pen-to-square me-1"></i> Edit Cause
+            </a>
+           @*  <a asp-controller="Causes" asp-action="Details" asp-route-id="@Model.CauseId" target="_blank" class="btn btn-outline-secondary shadow-sm">
+                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Public Page
+            </a> *@
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column -->
+    <div class="col-lg-8">
+        <!-- Banner Image & Description -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4 overflow-hidden">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="w-100" style="max-height: 350px; object-fit: cover;" />
+            }
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-3">About the Cause</h5>
+                <p class="text-dark leading-relaxed">@Model.Description</p>
+            </div>
+        </div>
+
+        <!-- Linked Donations -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white">
+            <div class="card-header bg-transparent border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-hand-holding-dollar text-success me-2"></i>Donations Received</h5>
+                <span class="badge bg-light text-dark border">@(Model.Donations?.Count ?? 0) Donations</span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Donations != null && Model.Donations.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table admin-table mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Donation #</th>
+                                    <th>Donor</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var d in Model.Donations.OrderByDescending(x => x.CreatedAt).Take(10))
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="AdminDonations" asp-action="Details" asp-route-id="@d.DonationId" class="fw-bold text-primary">
+                                                @d.DonationNumber
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fw-semibold d-block">@d.DonorName</span>
+                                            <span class="text-xs text-muted">@d.DonorEmail</span>
+                                        </td>
+                                        <td><span class="fw-bold text-success">PKR @d.Amount.ToString("N0")</span></td>
+                                        <td>
+                                            @if (d.Status == DonationStatus.Approved)
+                                            {
+                                                <span class="badge bg-success">Approved</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">@d.Status</span>
+                                            }
+                                        </td>
+                                        <td><span class="text-xs text-muted">@d.CreatedAt.ToString("dd MMM yyyy")</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 text-muted">
+                        <p class="mb-0">No donations received for this cause yet.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Funding Progress & Info -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 bg-white mb-4">
+            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-chart-pie text-primary me-2"></i>Fundraising Target</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-xs text-muted fw-bold">Raised of Goal</span>
+                        <span class="text-xs fw-bold text-success">@progress%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Target Amount:</span>
+                    <span class="fw-bold text-dark">PKR @Model.TargetAmount.ToString("N0")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Raised Amount:</span>
+                    <span class="fw-bold text-success">PKR @Model.RaisedAmount.ToString("N0")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">Remaining Needed:</span>
+                    <span class="fw-bold text-danger">PKR @Math.Max(0, Model.TargetAmount - Model.RaisedAmount).ToString("N0")</span>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                    <span class="text-muted">Partner NGO:</span>
+                    <a asp-controller="AdminNgos" asp-action="Details" asp-route-id="@Model.NGOId" class="fw-semibold text-primary">
+                        @(Model.NGO?.Name ?? "GIVE-AID")
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

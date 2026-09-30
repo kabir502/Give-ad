@@ -1,0 +1,103 @@
+@model List<Campaign>
+@{
+    ViewData["Title"] = "Campaigns Management";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">Time-bound Campaigns</h3>
+        <p class="text-muted mb-0">Manage seasonal relief drives, emergency appeals, and targeted welfare campaigns.</p>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fa-solid fa-plus me-1"></i> Create Campaign
+        </a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-3 bg-white">
+    <div class="card-body p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table admin-table mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Campaign Details</th>
+                            <th>NGO & Cause</th>
+                            <th>Goal & Raised (PKR)</th>
+                            <th style="min-width: 120px;">Progress</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model)
+                        {
+                            var progress = c.GoalAmount > 0 ? Math.Min(100, (int)((c.RaisedAmount / c.GoalAmount) * 100)) : 0;
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="@c.ImageUrl" alt="@c.Title" class="rounded" style="width: 48px; height: 48px; object-fit: cover;" />
+                                        <div>
+                                            <a asp-action="Details" asp-route-id="@c.CampaignId" class="fw-bold text-dark text-decoration-none">@c.Title</a>
+                                            <span class="text-xs text-muted d-block">Created: @c.CreatedDate.ToString("dd MMM yyyy")</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-dark fw-medium d-block">@(c.Cause?.Name ?? "General")</span>
+                                    <span class="text-xs text-primary">@(c.NGO?.Name ?? "GIVE-AID")</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success d-block">PKR @c.RaisedAmount.ToString("N0")</span>
+                                    <span class="text-xs text-muted">Goal: PKR @c.GoalAmount.ToString("N0")</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: @progress%" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-xs fw-bold text-muted">@progress%</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-xs text-dark d-block">@c.StartDate.ToString("dd MMM") - @c.EndDate.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td>
+                                    <form asp-action="ToggleStatus" asp-route-id="@c.CampaignId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="badge border-0 @(c.IsActive ? "bg-success" : "bg-secondary")" style="cursor: pointer;">
+                                            @(c.IsActive ? c.Status.ToString() : "Inactive")
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm">
+                                        <a asp-action="Details" asp-route-id="@c.CampaignId" class="btn btn-outline-primary" title="Details">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@c.CampaignId" class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-flag-checkered fa-3x mb-3 text-secondary"></i>
+                <h5 class="fw-bold">No campaigns found</h5>
+                <p class="mb-3">Create targeted campaigns for Ramadan, Winter Relief, Flood Drives, etc.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm">Create Campaign</a>
+            </div>
+        }
+    </div>
+</div>

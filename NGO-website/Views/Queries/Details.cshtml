@@ -1,0 +1,72 @@
+@model NGO_website.Models.Entities.Query
+@{
+    ViewData["Title"] = $"Query #{Model.QueryId}: {Model.Subject}";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Queries" asp-action="Index">Queries</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Query #@Model.QueryId</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 mb-4 bg-white">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <div>
+                <span class="badge bg-primary-subtle text-primary me-2">@Model.Category</span>
+                <span class="text-secondary text-xs"><i class="fa-regular fa-clock me-1"></i> Submitted on @Model.CreatedAt.ToString("dd MMMM yyyy, hh:mm tt") UTC</span>
+            </div>
+            <div>
+                @if (Model.Status == QueryStatus.Open)
+                {
+                    <span class="badge bg-warning text-dark px-3 py-2">Open</span>
+                }
+                else if (Model.Status == QueryStatus.InProgress)
+                {
+                    <span class="badge bg-info text-dark px-3 py-2">In Progress</span>
+                }
+                else if (Model.Status == QueryStatus.Resolved)
+                {
+                    <span class="badge bg-success px-3 py-2">Resolved</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary px-3 py-2">Closed</span>
+                }
+            </div>
+        </div>
+
+        <h3 class="fw-bold text-dark mb-3">@Model.Subject</h3>
+        <div class="p-3 bg-light rounded-3 border mb-4">
+            <h6 class="fw-bold text-dark mb-1">User Message from @Model.FullName:</h6>
+            <p class="text-secondary m-0 lh-base" style="white-space: pre-line;">@Model.Message</p>
+        </div>
+
+        <!-- Replies Section -->
+        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="fa-solid fa-comments text-primary me-2"></i> Official Support Replies</h5>
+
+        @if (!Model.Replies.Any())
+        {
+            <div class="alert alert-info border-0 shadow-xs mb-0">
+                <i class="fa-solid fa-hourglass-half me-2"></i> Our support administrators have received your inquiry and are preparing a response. You will receive an email update as soon as a reply is posted.
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var reply in Model.Replies.OrderBy(r => r.RepliedAt))
+                {
+                    <div class="card border-0 bg-light p-4 rounded-4 border-start border-4 border-primary">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold text-primary m-0"><i class="fa-solid fa-user-shield me-2"></i> @reply.AdminName (GIVE-AID Support)</h6>
+                            <small class="text-secondary text-xs">@reply.RepliedAt.ToString("dd MMM yyyy, hh:mm tt")</small>
+                        </div>
+                        <p class="text-secondary m-0 lh-lg" style="white-space: pre-line;">@reply.Message</p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

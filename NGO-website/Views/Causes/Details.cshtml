@@ -1,0 +1,108 @@
+@model NGO_website.Models.Entities.Cause
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Causes" asp-action="Index">Causes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Main Cause Details Column -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1000&auto=format&fit=crop&q=80" : Model.ImageUrl)" class="w-100 object-fit-cover" style="max-height: 450px;" alt="@Model.Name" />
+                <div class="card-body p-4 p-lg-5">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">@Model.Category</span>
+                        @if (Model.NGO != null)
+                        {
+                            <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
+                                <i class="fa-solid fa-building-ngo me-1 text-primary"></i> @Model.NGO.Name
+                            </span>
+                        }
+                    </div>
+
+                    <h1 class="fw-extrabold text-dark mb-4">@Model.Name</h1>
+
+                    <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">About This Cause</h5>
+                    <div class="text-secondary fs-6 lh-lg mb-5" style="white-space: pre-line;">
+                        @Model.Description
+                    </div>
+
+                    <!-- Linked Campaigns if any -->
+                    @if (Model.Campaigns != null && Model.Campaigns.Any())
+                    {
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Active Campaigns for This Cause</h5>
+                        <div class="row g-3">
+                            @foreach (var cmp in Model.Campaigns)
+                            {
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-light rounded-3 border">
+                                        <h6 class="fw-bold text-dark mb-1">@cmp.Title</h6>
+                                        <div class="d-flex justify-content-between text-xs text-secondary mb-2">
+                                            <span>Goal: PKR @cmp.GoalAmount.ToString("N0")</span>
+                                            <span class="text-success fw-bold">Raised: PKR @cmp.RaisedAmount.ToString("N0")</span>
+                                        </div>
+                                        <div class="progress custom-progress mb-2">
+                                            <div class="progress-bar bg-warning" style="width: @cmp.ProgressPercentage%"></div>
+                                        </div>
+                                        <a asp-controller="Donate" asp-action="Index" asp-route-campaignId="@cmp.CampaignId" class="btn btn-primary btn-sm w-100 rounded-pill">Donate to Campaign</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Sticky Donation Widget -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px; z-index: 20;">
+                <h5 class="fw-bold text-dark mb-3">Fundraising Progress</h5>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-baseline mb-2">
+                        <span class="fs-4 fw-extrabold text-success">PKR @Model.RaisedAmount.ToString("N0")</span>
+                        <span class="text-secondary text-sm">of PKR @Model.TargetAmount.ToString("N0")</span>
+                    </div>
+                    <div class="progress custom-progress mb-2">
+                        <div class="progress-bar" style="width: @Model.ProgressPercentage%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between text-xs text-secondary">
+                        <span><strong>@Model.ProgressPercentage%</strong> funded</span>
+                        <span>PKR @((Model.TargetAmount - Model.RaisedAmount > 0 ? Model.TargetAmount - Model.RaisedAmount : 0).ToString("N0")) remaining</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mb-4">
+                    <a asp-controller="Donate" asp-action="Index" asp-route-causeId="@Model.CauseId" class="btn btn-warning btn-lg fw-bold text-dark rounded-pill shadow-sm py-3">
+                        <i class="fa-solid fa-heart me-2 text-danger"></i> Donate to This Cause
+                    </a>
+                </div>
+
+                @if (Model.NGO != null)
+                {
+                    <div class="border-top pt-4">
+                        <h6 class="fw-bold text-dark mb-3">Managed By</h6>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <img src="@(string.IsNullOrEmpty(Model.NGO.LogoUrl) ? "https://images.unsplash.com/photo-1532629345422-7515f3d16bb9?w=300&auto=format&fit=crop&q=80" : Model.NGO.LogoUrl)" class="rounded-circle shadow-xs" style="width: 55px; height: 55px; object-fit: cover;" alt="@Model.NGO.Name" />
+                            <div>
+                                <h6 class="fw-bold m-0">@Model.NGO.Name</h6>
+                                <a asp-controller="NGOs" asp-action="Details" asp-route-id="@Model.NGO.NGOId" class="text-xs text-primary text-decoration-none">View NGO Profile &rarr;</a>
+                            </div>
+                        </div>
+                        <p class="text-secondary text-xs m-0"><i class="fa-solid fa-location-dot me-1 text-danger"></i> @Model.NGO.Address</p>
+                        <p class="text-secondary text-xs m-0 mt-1"><i class="fa-solid fa-envelope me-1 text-primary"></i> @Model.NGO.Email</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

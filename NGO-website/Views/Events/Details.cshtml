@@ -1,0 +1,60 @@
+@model NGO_website.Models.Entities.Event
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Events" asp-action="Index">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&auto=format&fit=crop&q=80" : Model.ImageUrl)" class="w-100 object-fit-cover" style="max-height: 450px;" alt="@Model.Title" />
+        <div class="card-body p-4 p-lg-5">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6">
+                    <i class="fa-regular fa-clock me-1"></i> @Model.EventDate.ToString("dddd, dd MMMM yyyy, hh:mm tt")
+                </span>
+                @if (Model.NGO != null)
+                {
+                    <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
+                        <i class="fa-solid fa-building-ngo me-1 text-primary"></i> Organized by @Model.NGO.Name
+                    </span>
+                }
+            </div>
+
+            <h1 class="fw-extrabold text-dark mb-4">@Model.Title</h1>
+
+            <div class="p-4 bg-light rounded-4 border mb-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <span class="text-secondary text-sm d-block"><i class="fa-solid fa-map-location-dot text-danger me-1"></i> Event Venue & Location</span>
+                        <h6 class="fw-bold text-dark m-0 mt-1">@Model.Location</h6>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-secondary text-sm d-block"><i class="fa-solid fa-calendar-check text-primary me-1"></i> Date & Time</span>
+                        <h6 class="fw-bold text-dark m-0 mt-1">@Model.EventDate.ToString("dd MMM yyyy, hh:mm tt")</h6>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">About This Event</h5>
+            <div class="text-secondary fs-6 lh-lg mb-4" style="white-space: pre-line;">
+                @Model.Description
+            </div>
+
+            <div class="d-flex gap-3">
+                <a asp-controller="Contact" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                    <i class="fa-solid fa-envelope me-1"></i> Contact Organizers
+                </a>
+                <a asp-controller="Events" asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    Back to All Events
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

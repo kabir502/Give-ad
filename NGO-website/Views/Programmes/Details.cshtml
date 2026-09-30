@@ -1,0 +1,117 @@
+@model NGO_website.ViewModels.User.SubmitInterestViewModel
+@{
+    var programme = ViewBag.Programme as NGO_website.Models.Entities.Programme;
+    ViewData["Title"] = programme?.Title ?? "Programme Details";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Programmes" asp-action="Index">Programmes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@(programme?.Title)</li>
+        </ol>
+    </nav>
+
+    @if (programme != null)
+    {
+        <div class="row g-5">
+            <!-- Left Column: Programme Information -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                    <img src="@(string.IsNullOrEmpty(programme.ImageUrl) ? "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1000&auto=format&fit=crop&q=80" : programme.ImageUrl)" class="w-100 object-fit-cover" style="max-height: 420px;" alt="@programme.Title" />
+                    <div class="card-body p-4 p-lg-5">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">
+                                <i class="fa-regular fa-calendar-check me-1"></i> @programme.Date.ToString("dddd, dd MMMM yyyy")
+                            </span>
+                            @if (programme.NGO != null)
+                            {
+                                <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill">
+                                    <i class="fa-solid fa-building-ngo me-1 text-primary"></i> @programme.NGO.Name
+                                </span>
+                            }
+                        </div>
+
+                        <h2 class="fw-extrabold text-dark mb-3">@programme.Title</h2>
+
+                        <div class="p-3 bg-light rounded-4 border mb-4">
+                            <div class="row g-3 text-sm">
+                                <div class="col-sm-6">
+                                    <span class="text-secondary d-block"><i class="fa-solid fa-clock text-primary me-1"></i> Schedule Timing</span>
+                                    <strong class="text-dark">@programme.StartTime - @programme.EndTime</strong>
+                                </div>
+                                <div class="col-sm-6">
+                                    <span class="text-secondary d-block"><i class="fa-solid fa-location-dot text-danger me-1"></i> Venue / Location</span>
+                                    <strong class="text-dark">@programme.Location</strong>
+                                </div>
+                                @if (programme.Capacity.HasValue)
+                                {
+                                    <div class="col-12 mt-2">
+                                        <span class="text-secondary d-block"><i class="fa-solid fa-users text-info me-1"></i> Volunteer / Attendee Capacity</span>
+                                        <strong class="text-dark">@programme.Capacity participants max</strong>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">Programme Description & Purpose</h5>
+                        <div class="text-secondary fs-6 lh-lg mb-4" style="white-space: pre-line;">
+                            @programme.Description
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Registration / Show Interest Form -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 sticky-top bg-white" style="top: 100px; z-index: 20;">
+                    <span class="badge bg-success-subtle text-success border border-success align-self-start mb-2 px-3 py-1 rounded-pill">
+                        Open for Volunteers & Attendees
+                    </span>
+                    <h4 class="fw-bold text-dark mb-3">Show Interest & Register</h4>
+                    <p class="text-secondary text-sm mb-4">Register your interest to volunteer or attend this programme. You will receive an instant confirmation email with full details.</p>
+
+                    <form asp-controller="Programmes" asp-action="SubmitInterest" method="post" class="prevent-duplicate-submit">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ProgrammeId" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Your full name" />
+                            <span asp-validation-for="FullName" class="text-danger text-xs"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control" placeholder="your.email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger text-xs"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+92 300 1234567" />
+                            <span asp-validation-for="Phone" class="text-danger text-xs"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label fw-semibold text-secondary"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Briefly mention your skills, availability, or motivation..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger text-xs"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Confirm Participation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

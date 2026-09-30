@@ -1,0 +1,55 @@
+@model NGO_website.ViewModels.User.InviteFriendViewModel
+@{
+    ViewData["Title"] = "Invite Friends";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5 bg-white">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge bg-success px-3 py-1 rounded-pill">Share the Cause</span>
+                </div>
+                <h2 class="fw-bold text-dark mb-2">Invite a Friend</h2>
+                <p class="text-secondary text-sm mb-4">
+                    Invite someone you know to join GIVE-AID. We will email them a personal invitation from you.
+                </p>
+
+                <form asp-controller="UserDashboard" asp-action="InviteFriend" method="post" class="prevent-duplicate-submit">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger text-sm mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FriendName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FriendName" class="form-control" placeholder="Friend's full name" />
+                            <span asp-validation-for="FriendName" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="FriendEmail" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FriendEmail" class="form-control" placeholder="friend@example.com" />
+                            <span asp-validation-for="FriendEmail" class="text-danger text-xs"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="PersonalMessage" class="form-label fw-semibold text-secondary"></label>
+                            <textarea asp-for="PersonalMessage" class="form-control" rows="5" placeholder="Add a short personal note (optional)..."></textarea>
+                            <span asp-validation-for="PersonalMessage" class="text-danger text-xs"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill px-5 fw-bold shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Send Invitation
+                        </button>
+                        <a asp-controller="UserDashboard" asp-action="Index" class="btn btn-outline-secondary btn-lg rounded-pill px-4">Back to Dashboard</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

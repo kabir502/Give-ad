@@ -1,0 +1,761 @@
+/* ============================================================
+   GIVE-AID — Global Design System
+   Derived from landing page. Navbar styles preserved separately.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Landing palette (canonical) */
+    --ga-navy: #0b1f33;
+    --ga-navy-deep: #061525;
+    --ga-charcoal: #1a2b3c;
+    --ga-warm: #f6f4f0;
+    --ga-warm-soft: #ebe7e0;
+    --ga-teal: #0d8f82;
+    --ga-teal-dark: #0a6f65;
+    --ga-teal-soft: rgba(13, 143, 130, 0.12);
+    --ga-ink: #142433;
+    --ga-muted: #5c6b7a;
+    --ga-line: rgba(11, 31, 51, 0.1);
+    --ga-white: #ffffff;
+    --ga-radius: 6px;
+    --ga-radius-lg: 12px;
+    --ga-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ga-font: 'Manrope', system-ui, sans-serif;
+    --ga-display: 'Fraunces', Georgia, serif;
+    --ga-nav-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    /* Legacy aliases used by older rules */
+    --primary-color: #0d8f82;
+    --primary-dark: #0a6f65;
+    --secondary-color: #0d8f82;
+    --accent-orange: #0d8f82;
+    --accent-red: #c44536;
+    --dark-slate: #0b1f33;
+    --light-bg: #f6f4f0;
+    --card-border: rgba(11, 31, 51, 0.1);
+}
+
+/* ----- Base (content typography; navbar keeps its own font) ----- */
+body {
+    font-family: var(--ga-font);
+    background-color: var(--ga-warm);
+    color: var(--ga-ink);
+    line-height: 1.65;
+}
+
+/* CRITICAL: preserve existing navbar look & feel */
+header .top-bar,
+header .navbar {
+    font-family: var(--ga-nav-font);
+}
+
+.text-xs { font-size: 0.78rem; }
+.text-sm { font-size: 0.88rem; }
+.hover-underline:hover { text-decoration: underline !important; }
+.hover-white:hover { color: #ffffff !important; }
+
+.brand-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    font-size: 1.15rem;
+}
+
+/* ============================================================
+   NAVBAR — keep existing visual behavior (do not redesign)
+   ============================================================ */
+header {
+    position: relative;
+    z-index: 1040;
+}
+
+.navbar {
+    transition: all 0.3s ease;
+}
+.navbar.sticky-top {
+    z-index: 1040 !important;
+}
+.navbar .dropdown-menu {
+    z-index: 1060 !important;
+}
+
+/* Ensure sticky elements on details pages do not overlap navigation dropdowns */
+main .sticky-top {
+    z-index: 20 !important;
+}
+
+.navbar .nav-link {
+    font-size: 0.94rem;
+    color: #334155;
+    transition: color 0.2s ease;
+}
+.navbar .nav-link:hover {
+    color: var(--ga-teal);
+}
+
+/* Logo colors — match home/landing brand (navy + teal) */
+header .navbar .navbar-brand,
+header .navbar .navbar-brand.text-primary {
+    color: var(--ga-navy) !important;
+}
+header .navbar .navbar-brand .text-warning {
+    color: var(--ga-teal) !important;
+}
+header .navbar .brand-icon-wrapper.bg-primary {
+    background: var(--ga-teal) !important;
+}
+
+/* ============================================================
+   MAIN CONTENT THEME — scoped so navbar is unaffected
+   ============================================================ */
+main {
+    background: var(--ga-warm);
+}
+
+main h1, main h2, main h3, main .fw-extrabold,
+main .display-4, main .display-5, main .display-6 {
+    font-family: var(--ga-display);
+    letter-spacing: -0.025em;
+    color: var(--ga-navy);
+}
+
+main h1.fw-extrabold,
+main h1.fw-bold {
+    font-weight: 600;
+}
+
+main .text-dark { color: var(--ga-navy) !important; }
+main .text-secondary { color: var(--ga-muted) !important; }
+main .text-muted { color: var(--ga-muted) !important; }
+main .text-primary { color: var(--ga-teal) !important; }
+main .text-success { color: var(--ga-teal-dark) !important; }
+main .text-info { color: #2a8f9e !important; }
+
+main a.hover-primary:hover,
+main .hover-primary:hover {
+    color: var(--ga-teal) !important;
+}
+
+/* Page header pattern */
+main .container.py-5 > .text-center.mb-5 .badge,
+main .container > .text-center.mb-4 .badge,
+main .container > .text-center.mb-5 .badge {
+    font-family: var(--ga-font);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    border-radius: 4px !important;
+    padding: 0.45rem 0.9rem !important;
+}
+
+main .badge.bg-primary-subtle,
+main .badge.bg-primary-subtle.text-primary {
+    background: var(--ga-teal-soft) !important;
+    color: var(--ga-teal-dark) !important;
+    border: 1px solid rgba(13, 143, 130, 0.2);
+}
+
+main .badge.bg-primary {
+    background: var(--ga-navy) !important;
+}
+
+main .badge.bg-warning,
+main .badge.bg-warning-subtle {
+    background: rgba(13, 143, 130, 0.15) !important;
+    color: var(--ga-teal-dark) !important;
+    border-color: rgba(13, 143, 130, 0.25) !important;
+}
+
+main .badge.rounded-pill {
+    border-radius: 4px !important;
+}
+
+/* Buttons inside main + footer CTAs (not navbar) */
+main .btn,
+.modal .btn {
+    font-family: var(--ga-font);
+    font-weight: 700;
+    border-radius: var(--ga-radius) !important;
+    padding: 0.65rem 1.25rem;
+    transition: transform 0.25s var(--ga-ease), background 0.25s var(--ga-ease), box-shadow 0.25s var(--ga-ease), border-color 0.25s var(--ga-ease);
+}
+
+main .btn:hover,
+.modal .btn:hover {
+    transform: translateY(-1px);
+}
+
+main .btn-primary,
+.modal .btn-primary {
+    background: var(--ga-teal) !important;
+    border-color: var(--ga-teal) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(13, 143, 130, 0.22);
+}
+
+main .btn-primary:hover,
+.modal .btn-primary:hover {
+    background: var(--ga-teal-dark) !important;
+    border-color: var(--ga-teal-dark) !important;
+}
+
+main .btn-warning,
+main .btn-warning.text-dark,
+.modal .btn-warning {
+    background: var(--ga-navy) !important;
+    border-color: var(--ga-navy) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(11, 31, 51, 0.2);
+}
+
+main .btn-warning:hover,
+.modal .btn-warning:hover {
+    background: var(--ga-navy-deep) !important;
+    border-color: var(--ga-navy-deep) !important;
+    color: #fff !important;
+}
+
+main .btn-outline-primary {
+    color: var(--ga-teal) !important;
+    border-color: var(--ga-teal) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+main .btn-outline-primary:hover {
+    background: var(--ga-teal) !important;
+    color: #fff !important;
+}
+
+main .btn-outline-secondary,
+main .btn-outline-dark {
+    border-color: var(--ga-line) !important;
+    color: var(--ga-ink) !important;
+}
+
+main .btn-outline-secondary:hover,
+main .btn-outline-dark:hover {
+    background: var(--ga-navy) !important;
+    border-color: var(--ga-navy) !important;
+    color: #fff !important;
+}
+
+main .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.45) !important;
+    color: #fff !important;
+}
+
+main .btn-success {
+    background: var(--ga-teal) !important;
+    border-color: var(--ga-teal) !important;
+}
+
+main .btn-danger {
+    background: #c44536 !important;
+    border-color: #c44536 !important;
+}
+
+main .rounded-pill {
+    border-radius: var(--ga-radius) !important;
+}
+
+main .rounded-4,
+main .rounded-3 {
+    border-radius: var(--ga-radius-lg) !important;
+}
+
+/* Cards */
+main .card,
+main .stat-card,
+main .welfare-card {
+    background: var(--ga-white);
+    border: 1px solid var(--ga-line) !important;
+    border-radius: var(--ga-radius-lg) !important;
+    box-shadow: none;
+    transition: transform 0.35s var(--ga-ease), box-shadow 0.35s var(--ga-ease);
+}
+
+main .card.shadow-sm,
+main .card.shadow,
+main .card.shadow-lg {
+    box-shadow: 0 1px 2px rgba(11, 31, 51, 0.04) !important;
+}
+
+main .card:hover,
+main .stat-card:hover,
+main .welfare-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(11, 31, 51, 0.08) !important;
+}
+
+main .stat-card {
+    padding: 1.5rem;
+}
+
+main .welfare-card {
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+main .welfare-card-img {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.6s var(--ga-ease);
+}
+
+main .welfare-card:hover .welfare-card-img {
+    transform: scale(1.04);
+}
+
+main .welfare-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+main .card-header {
+    background: var(--ga-warm-soft) !important;
+    border-bottom: 1px solid var(--ga-line) !important;
+    font-weight: 700;
+    color: var(--ga-navy);
+}
+
+main .bg-light {
+    background-color: var(--ga-warm-soft) !important;
+}
+
+main .bg-white {
+    background-color: var(--ga-white) !important;
+}
+
+main .bg-primary {
+    background-color: var(--ga-navy) !important;
+}
+
+main .bg-success {
+    background-color: var(--ga-teal) !important;
+}
+
+main .border,
+main .border-top,
+main .border-bottom,
+main .border-start,
+main .border-end {
+    border-color: var(--ga-line) !important;
+}
+
+/* Forms */
+main .form-control,
+main .form-select,
+.modal .form-control,
+.modal .form-select {
+    font-family: var(--ga-font);
+    border: 1px solid var(--ga-line);
+    border-radius: var(--ga-radius) !important;
+    padding: 0.7rem 0.9rem;
+    color: var(--ga-ink);
+    background: var(--ga-white);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+main .form-control:focus,
+main .form-select:focus,
+.modal .form-control:focus,
+.modal .form-select:focus {
+    border-color: var(--ga-teal);
+    box-shadow: 0 0 0 3px var(--ga-teal-soft);
+}
+
+main .form-label,
+.modal .form-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--ga-ink);
+    margin-bottom: 0.4rem;
+}
+
+main .input-group-text {
+    background: var(--ga-warm-soft);
+    border: 1px solid var(--ga-line);
+    color: var(--ga-muted);
+    font-weight: 700;
+    border-radius: var(--ga-radius) !important;
+}
+
+main .form-check-input:checked {
+    background-color: var(--ga-teal);
+    border-color: var(--ga-teal);
+}
+
+main .form-check-input:focus {
+    box-shadow: 0 0 0 3px var(--ga-teal-soft);
+}
+
+main .text-danger.field-validation-error,
+main .field-validation-valid.text-danger,
+main span.text-danger,
+main .validation-summary-errors {
+    color: #c44536 !important;
+    font-size: 0.85rem;
+}
+
+/* Progress */
+main .custom-progress,
+main .progress {
+    height: 6px;
+    border-radius: 99px;
+    background-color: var(--ga-warm-soft);
+    overflow: hidden;
+}
+
+main .custom-progress .progress-bar,
+main .progress-bar {
+    background: var(--ga-teal) !important;
+    border-radius: 99px;
+}
+
+/* Tables */
+main .table {
+    --bs-table-bg: transparent;
+    color: var(--ga-ink);
+}
+
+main .table thead th {
+    font-family: var(--ga-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ga-muted);
+    background: var(--ga-warm-soft) !important;
+    border-bottom: 1px solid var(--ga-line);
+    padding: 0.85rem 1rem;
+}
+
+main .table td {
+    padding: 0.95rem 1rem;
+    vertical-align: middle;
+    border-color: var(--ga-line);
+    font-size: 0.92rem;
+}
+
+main .table-hover tbody tr:hover {
+    background: rgba(13, 143, 130, 0.05);
+}
+
+main .table-responsive {
+    border: 1px solid var(--ga-line);
+    border-radius: var(--ga-radius-lg);
+    background: var(--ga-white);
+}
+
+/* Accordion */
+main .accordion-item {
+    border: 1px solid var(--ga-line) !important;
+    border-radius: var(--ga-radius-lg) !important;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+    background: var(--ga-white);
+}
+
+main .accordion-button {
+    font-family: var(--ga-font);
+    font-weight: 700;
+    color: var(--ga-navy);
+    background: var(--ga-white);
+    box-shadow: none !important;
+}
+
+main .accordion-button:not(.collapsed) {
+    background: var(--ga-teal-soft);
+    color: var(--ga-teal-dark);
+}
+
+main .accordion-button:focus {
+    box-shadow: 0 0 0 3px var(--ga-teal-soft) !important;
+}
+
+/* Breadcrumb */
+main .breadcrumb {
+    background: transparent;
+    padding: 0;
+}
+
+main .breadcrumb-item a {
+    color: var(--ga-teal);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+main .breadcrumb-item.active {
+    color: var(--ga-muted);
+}
+
+/* Alerts / notifications inside main */
+main .alert {
+    border-radius: var(--ga-radius-lg);
+    border: 1px solid var(--ga-line);
+    font-weight: 500;
+}
+
+main .alert-success {
+    background: rgba(13, 143, 130, 0.1);
+    border-color: rgba(13, 143, 130, 0.25);
+    color: var(--ga-teal-dark);
+}
+
+main .alert-danger {
+    background: rgba(196, 69, 54, 0.08);
+    border-color: rgba(196, 69, 54, 0.25);
+    color: #9a3429;
+}
+
+main .alert-warning {
+    background: rgba(180, 140, 60, 0.1);
+    border-color: rgba(180, 140, 60, 0.25);
+    color: #7a5c1e;
+}
+
+main .alert-info {
+    background: rgba(42, 143, 158, 0.1);
+    border-color: rgba(42, 143, 158, 0.25);
+    color: #1f6a75;
+}
+
+/* Donation flow */
+main .donation-step-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--ga-teal);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+main .amount-btn-pill {
+    cursor: pointer;
+    border: 1.5px solid var(--ga-line);
+    border-radius: var(--ga-radius);
+    padding: 12px 18px;
+    font-weight: 700;
+    color: var(--ga-ink);
+    background: var(--ga-white);
+    transition: all 0.25s var(--ga-ease);
+    text-align: center;
+}
+
+main .amount-btn-pill:hover,
+main .amount-btn-pill.active {
+    border-color: var(--ga-teal);
+    background-color: var(--ga-teal-soft);
+    color: var(--ga-teal-dark);
+}
+
+main .payment-method-card {
+    cursor: pointer;
+    border: 1.5px solid var(--ga-line);
+    border-radius: var(--ga-radius-lg);
+    padding: 18px;
+    background: var(--ga-white);
+    transition: all 0.25s var(--ga-ease);
+}
+
+main .payment-method-card:hover,
+main .payment-method-card.selected {
+    border-color: var(--ga-teal);
+    background-color: var(--ga-teal-soft);
+    box-shadow: 0 8px 20px rgba(13, 143, 130, 0.12);
+}
+
+/* Legacy hero (non-landing pages that still use it) */
+main .hero-section {
+    background: linear-gradient(135deg, var(--ga-navy-deep) 0%, var(--ga-navy) 55%, var(--ga-charcoal) 100%);
+    color: white;
+    padding: 90px 0 70px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+main .hero-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(13, 143, 130, 0.2), transparent 45%);
+    pointer-events: none;
+}
+
+main .hero-section h1,
+main .hero-section .text-warning {
+    color: #7dd3c8 !important;
+}
+
+main .bg-primary .btn-warning,
+main .card.bg-primary .btn-warning {
+    background: var(--ga-teal) !important;
+    border-color: var(--ga-teal) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(13, 143, 130, 0.3);
+}
+
+main .bg-primary .badge.bg-warning,
+main .card.bg-primary .badge.bg-warning {
+    background: rgba(125, 211, 200, 0.2) !important;
+    color: #9fe8df !important;
+    border: 1px solid rgba(125, 211, 200, 0.35) !important;
+}
+
+main .bg-primary h1,
+main .bg-primary h2,
+main .bg-primary h3,
+main .card.bg-primary h1,
+main .card.bg-primary h2,
+main .card.bg-primary h3 {
+    color: #fff !important;
+}
+
+/* Auth card accent */
+main .card .brand-icon-wrapper {
+    background: var(--ga-teal) !important;
+}
+
+/* Page reveal helpers */
+.ga-reveal {
+    opacity: 0;
+    transform: translateY(22px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ga-reveal {
+        opacity: 1;
+        transform: none;
+    }
+    main .card:hover,
+    main .stat-card:hover,
+    main .welfare-card:hover,
+    main .btn:hover {
+        transform: none;
+    }
+}
+
+/* ============================================================
+   FOOTER — match landing language (below navbar)
+   ============================================================ */
+footer.bg-dark {
+    background: var(--ga-navy-deep) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    margin-top: 0 !important;
+    padding-top: 4rem !important;
+    font-family: var(--ga-font);
+}
+
+footer .text-warning {
+    color: #7dd3c8 !important;
+}
+
+footer .border-warning {
+    border-color: #7dd3c8 !important;
+}
+
+footer .brand-icon-wrapper.bg-primary {
+    background: var(--ga-teal) !important;
+}
+
+footer a.hover-white:hover {
+    color: #7dd3c8 !important;
+}
+
+footer .text-primary {
+    color: #7dd3c8 !important;
+}
+
+footer .btn-outline-secondary {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+footer .btn-outline-secondary:hover {
+    background: var(--ga-teal);
+    border-color: var(--ga-teal);
+}
+
+/* Receipt print */
+.receipt-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: white;
+    border-radius: var(--ga-radius-lg);
+    border: 1px solid var(--ga-line);
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+@media print {
+    body * { visibility: hidden; }
+    .receipt-container, .receipt-container * { visibility: visible; }
+    .receipt-container {
+        position: absolute;
+        left: 0; top: 0;
+        width: 100%;
+        max-width: 100%;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+    }
+    .no-print { display: none !important; }
+}
+
+/* Modal theming */
+.modal-content {
+    border: 1px solid var(--ga-line);
+    border-radius: var(--ga-radius-lg);
+    font-family: var(--ga-font);
+}
+
+.modal-header {
+    border-bottom-color: var(--ga-line);
+}
+
+.modal-title {
+    font-family: var(--ga-display);
+    color: var(--ga-navy);
+    font-weight: 600;
+}
+
+/* Pagination */
+main .page-link {
+    color: var(--ga-teal);
+    border-color: var(--ga-line);
+    border-radius: var(--ga-radius) !important;
+    margin: 0 2px;
+}
+
+main .page-item.active .page-link {
+    background: var(--ga-teal);
+    border-color: var(--ga-teal);
+}
+
+main .page-link:hover {
+    background: var(--ga-teal-soft);
+    color: var(--ga-teal-dark);
+}
+
+/* List group */
+main .list-group-item {
+    border-color: var(--ga-line);
+    color: var(--ga-ink);
+}
+
+main .list-group-item.active {
+    background: var(--ga-navy);
+    border-color: var(--ga-navy);
+}
